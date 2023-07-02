@@ -1,4 +1,5 @@
 import 'package:chabo/constant.dart';
+import 'package:chabo/module/modules.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -25,18 +26,20 @@ class AppPage extends StatelessWidget {
   @override
   Widget build(context) => Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const FaIcon(
+              FontAwesomeIcons.bars,
+            ),
+            alignment: Alignment.center,
+            onPressed: () => Get.to(
+              SettingPage(),
+              duration: const Duration(milliseconds: Constant.navigationDuration),
+              transition: Transition.leftToRight,
+            ),
+          ),
           title: Text(Constant.appName),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.more_vert_rounded,
-              ),
-              alignment: Alignment.topRight,
-              onPressed: () => print('go to action'),
-            ),
-          ],
         ),
         body: Center(
           child: Text('Alarm clock list page'),
@@ -50,8 +53,9 @@ class AppPage extends StatelessWidget {
                 bottom: Constant.fabBottomMargin.h,
               ),
               child: FloatingActionButton(
-                child: Icon(
-                  Icons.grid_view,
+                heroTag: null,
+                child: const Icon(
+                  Icons.grid_view_rounded,
                 ),
                 onPressed: () => print('change grid mode'),
               ),
@@ -62,14 +66,15 @@ class AppPage extends StatelessWidget {
                 bottom: Constant.fabBottomMargin.h,
               ),
               child: FloatingActionButton(
-                child: Icon(
-                  Icons.add,
+                heroTag: null,
+                child: const FaIcon(
+                  FontAwesomeIcons.plus,
                 ),
                 onPressed: () => print('open dialog'),
               ),
             )
           ],
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       );
 }
