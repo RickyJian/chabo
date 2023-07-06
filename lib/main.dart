@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
           title: Constant.appName,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
+            fontFamily: 'openhuninn',
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
             useMaterial3: true,
           ),
