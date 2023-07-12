@@ -5,16 +5,21 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
+import 'module/home/home.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(context) => Sizer(
         builder: (context, orientation, deviceType) => GetMaterialApp(
-          title: Constant.appName,
+          title: 'Chabo',
+          translations: Message(),
+          locale: Message.englishLocale,
+          fallbackLocale: Message.englishLocale,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            fontFamily: 'openhuninn',
+            fontFamily: Constant.fontFamily,
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
             useMaterial3: true,
           ),
@@ -24,6 +29,8 @@ class MyApp extends StatelessWidget {
 }
 
 class AppPage extends StatelessWidget {
+  final HomeController _homeController = Get.put(HomeController());
+
   @override
   Widget build(context) => Scaffold(
         appBar: AppBar(
@@ -38,14 +45,17 @@ class AppPage extends StatelessWidget {
               transition: Transition.leftToRight,
             ),
           ),
-          title: Text(Constant.appName),
+          title: Text(Message.appTitle.tr),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           centerTitle: true,
         ),
-        body: Center(
-          child: Text('Alarm clock list page'),
+        body: GetX<HomeController>(
+          init: _homeController,
+          builder: (home) => ListView(
+            children: home.clocks.map((clock) => ClockWidget(component: clock)).toList(),
+          ),
         ),
-        floatingActionButton: Column(
+        floatingActionButton: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Container(
