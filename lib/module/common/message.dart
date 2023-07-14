@@ -36,6 +36,9 @@ class Message extends Translations {
   static const String hourShort = 'HOUR';
   static const String minuteShort = 'MINUTE';
 
+  /// info message
+  static const String infoMsgWeekdayIsEmpty = 'MSG_WEEKDAY_IS_EMPTY';
+
   /// error message
 
   @override
@@ -55,6 +58,7 @@ class Message extends Translations {
           hourShort: 'H',
           minuteShort: 'M',
           labelEmpty: 'empty label',
+          infoMsgWeekdayIsEmpty: 'When week days are disabled, will set every day enabled.',
         },
         'zh_TW': {
           appTitle: '日本矮雞',
@@ -71,6 +75,7 @@ class Message extends Translations {
           hourShort: '時',
           minuteShort: '分',
           labelEmpty: '未設定標籤',
+          infoMsgWeekdayIsEmpty: '當星期皆為非啟用時，自動將每天設定為啟用。',
         }
       };
 }

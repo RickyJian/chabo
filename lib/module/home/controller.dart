@@ -22,7 +22,7 @@ class HomeController extends GetxController {
         name: 'label $i',
         section: cmn.TimeSection.am,
         status: cmn.Status.enabled,
-        weekdays: [cmn.Weekday.sunday, cmn.Weekday.monday, cmn.Weekday.friday],
+        weekdays: cmn.Weekday.values.toList(),
         isLast: i == 4,
       ),
     );
@@ -55,6 +55,13 @@ class HomeController extends GetxController {
       beginTimer(clock);
     }
     clocks.refresh();
+  }
+
+  bool isWeekdaysEmpty(List<cmn.Weekday> weekdays, cmn.Weekday weekday) {
+    if (weekdays.length > 1 || !weekdays.contains(weekday)){
+      return false;
+    }
+    return true;
   }
 
   beginTimer(ClockComponent clock) {

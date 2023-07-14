@@ -104,7 +104,7 @@ class ClockWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: cmn.Weekday.values
                       .map(
-                        (weekday) => _weekday(weekday, component),
+                        (weekday) => _weekday(component, weekday),
                       )
                       .toList(),
                 ),
@@ -136,7 +136,7 @@ class ClockWidget extends StatelessWidget {
         ],
       );
 
-  Widget _weekday(cmn.Weekday weekday, ClockComponent clock) => Expanded(
+  Widget _weekday(ClockComponent clock, cmn.Weekday weekday) => Expanded(
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
@@ -153,7 +153,57 @@ class ClockWidget extends StatelessWidget {
             child: Center(
               child: Text(weekday.string),
             ),
-            onTap: () => _homeController.toggleWeekday(clock, weekday),
+            onTap: () {
+              if (_homeController.isWeekdaysEmpty(clock.weekdays, weekday)) {
+                Get.rawSnackbar(
+                  messageText: SizedBox(
+                    height: Constant.notificationHeight.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Icon(
+                            Icons.info_outline_rounded,
+                            color: Colors.white,
+                            size: Constant.notificationIconSize.sp,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(right: Constant.notificationTextPadding),
+                        ),
+                        Expanded(
+                          flex: 9,
+                          child: Text(
+                            cmn.Message.infoMsgWeekdayIsEmpty.tr,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  margin: EdgeInsets.only(
+                    left: Constant.notificationMarginWidth.w,
+                    right: Constant.notificationMarginWidth.w,
+                    bottom: Constant.notificationMarginBottom.h,
+                  ),
+                  boxShadows: [
+                    const BoxShadow(
+                      color: Colors.black54,
+                      offset: Offset(0, 10),
+                      spreadRadius: 1,
+                      blurRadius: 10,
+                    )
+                  ],
+                  borderRadius: Constant.notificationBorderRadius,
+                  snackPosition: SnackPosition.BOTTOM,
+                  snackStyle: SnackStyle.FLOATING,
+                  duration: const Duration(seconds: 2)
+                );
+              }
+              _homeController.toggleWeekday(clock, weekday);
+            },
           ),
         ),
       );

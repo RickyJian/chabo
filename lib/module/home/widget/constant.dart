@@ -28,4 +28,12 @@ class Constant {
   static const double weekdayBorderWidth = 1.5;
   static const double weekdayPaddingTop = 1;
   static const double weekdayCircularRadius = 360;
+
+  /// notification
+  static const double notificationIconSize = 23;
+  static const double notificationHeight = 5;
+  static const double notificationBorderRadius = 5;
+  static const double notificationMarginWidth = 5;
+  static const double notificationMarginBottom = 2.5;
+  static const double notificationTextPadding = 2;
 }
