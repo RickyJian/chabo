@@ -36,4 +36,6 @@ class Constant {
   static const double notificationMarginWidth = 5;
   static const double notificationMarginBottom = 2.5;
   static const double notificationTextPadding = 2;
+  static const double notificationBoxShadowSpreadRadius = 1;
+  static const double notificationBoxShadowBlurRadius = 10;
 }
