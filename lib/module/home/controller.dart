@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:chabo/module/common/common.dart' as cmn;
 
@@ -52,7 +54,7 @@ class HomeController extends GetxController {
       clock.weekdays.addAll(cmn.Weekday.values);
     }
     if (clock.status == cmn.Status.enabled) {
-      beginTimer(clock);
+      // TODO: enable count down timer
     }
     clocks.refresh();
   }
@@ -64,8 +66,4 @@ class HomeController extends GetxController {
     return true;
   }
 
-  beginTimer(ClockComponent clock) {
-    print(DateTime.now().weekday);
-    // clocks.refresh();
-  }
 }

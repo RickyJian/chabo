@@ -16,7 +16,7 @@ class ClockComponent {
   final bool isLast;
   cmn.Status status;
 
-  // TODO: add ringtone, and shake
+  // TODO: add diff time, ringtone, and shake
 
   ClockComponent(
       {required this.id,
@@ -79,6 +79,7 @@ class ClockWidget extends StatelessWidget {
                 height: Constant.farawayHeight.h,
                 child: component.status == cmn.Status.enabled
                     ? Text(
+                        // TODO: make timer count down
                         '2${cmn.Message.dayShort.tr}4${cmn.Message.hourShort.tr}30${cmn.Message.minuteShort.tr}',
                         style: TextStyle(
                           fontSize: Constant.farawayFontSize.sp,
