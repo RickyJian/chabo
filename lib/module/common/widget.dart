@@ -113,3 +113,20 @@ class DialogWidget extends StatelessWidget {
         ],
       );
 }
+
+class DialogFooterButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+
+  const DialogFooterButton({required this.label, this.onPressed});
+
+  @override
+  Widget build(context) => TextButton(
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.all(Constant.dialogTextButtonPadding),
+          textStyle: TextStyle(fontSize: Constant.dialogTextFontSize.sp),
+        ),
+        onPressed: onPressed,
+        child: Text(label),
+      );
+}
