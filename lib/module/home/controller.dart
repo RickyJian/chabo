@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chabo/module/common/common.dart' as cmn;
 
@@ -22,7 +23,7 @@ class HomeController extends GetxController {
         hour: 12,
         minute: 10,
         name: 'label $i',
-        section: cmn.TimeSection.am,
+        period: DayPeriod.am,
         status: cmn.Status.enabled,
         weekdays: cmn.Weekday.values.toList(),
         isLast: i == 4,

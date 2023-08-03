@@ -11,7 +11,7 @@ class ClockComponent {
   final int id;
   final int hour;
   final int minute;
-  final cmn.TimeSection section;
+  final DayPeriod period;
   final String name;
   final List<cmn.Weekday> weekdays;
   final bool isLast;
@@ -23,7 +23,7 @@ class ClockComponent {
       {required this.id,
       required this.hour,
       required this.minute,
-      required this.section,
+      required this.period,
       required this.name,
       required this.weekdays,
       required this.isLast,
@@ -63,7 +63,7 @@ class ClockWidget extends StatelessWidget {
                 children: [
                   Text(
                     // TODO: make `:` in center position
-                    '${component.section.string} ${component.hour}:${component.minute}',
+                    '${component.period.localize} ${component.hour}:${component.minute}',
                     style: TextStyle(
                       fontSize: Constant.timeFontSize.sp,
                     ),
@@ -256,9 +256,9 @@ class ClockContentWidget extends StatelessWidget {
                     textStyle: TextStyle(
                       fontSize: Constant.dayPeriodFontSize.sp,
                     ),
-                    children: cmn.TimeSection.values
+                    children: DayPeriod.values
                         .map(
-                          (section) => Text(section.string),
+                          (section) => Text(section.localize),
                         )
                         .toList(),
                     onPressed: (index) => print(index),

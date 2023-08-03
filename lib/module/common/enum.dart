@@ -1,16 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'message.dart';
 
-enum TimeSection { am, pm }
-
-extension TimeSectionExtension on TimeSection {
-  String get string {
+extension DayPeriodExtension on DayPeriod {
+  String get localize {
     switch (this) {
-      case TimeSection.am:
-        return Message.clockTimeSectionAM.tr;
-      case TimeSection.pm:
-        return Message.clockTimeSectionPM.tr;
+      case DayPeriod.am:
+        return Message.dayPeriodAM.tr;
+      case DayPeriod.pm:
+        return Message.dayPeriodPM.tr;
     }
   }
 }

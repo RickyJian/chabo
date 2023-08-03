@@ -16,8 +16,8 @@ class Message extends Translations {
   static const appTitle = 'APP_TITLE';
 
   /// clock
-  static const String clockTimeSectionAM = 'CLOCK_TIME_SECTION_AM';
-  static const String clockTimeSectionPM = 'CLOCK_TIME_SECTION_PM';
+  static const String dayPeriodAM = 'CLOCK_TIME_SECTION_AM';
+  static const String dayPeriodPM = 'CLOCK_TIME_SECTION_PM';
 
   /// label
   static const String labelEmpty = 'LABEL_EMPTY';
@@ -45,8 +45,8 @@ class Message extends Translations {
   Map<String, Map<String, String>> get keys => {
         'en_US': {
           appTitle: 'Chabo',
-          clockTimeSectionAM: 'AM',
-          clockTimeSectionPM: 'PM',
+          dayPeriodAM: 'AM',
+          dayPeriodPM: 'PM',
           weekdaySUN: 'SUN',
           weekdayMON: 'MON',
           weekdayTUE: 'TUE',
@@ -62,8 +62,8 @@ class Message extends Translations {
         },
         'zh_TW': {
           appTitle: '日本矮雞',
-          clockTimeSectionAM: '上午',
-          clockTimeSectionPM: '下午',
+          dayPeriodAM: '上午',
+          dayPeriodPM: '下午',
           weekdaySUN: '日',
           weekdayMON: '一',
           weekdayTUE: '二',
