@@ -1,5 +1,6 @@
 import 'package:chabo/module/common/common.dart' as cmn;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
@@ -205,6 +206,106 @@ class ClockWidget extends StatelessWidget {
               _homeController.toggleWeekday(clock, weekday);
             },
           ),
+        ),
+      );
+}
+
+class ClockContentWidget extends StatelessWidget {
+  final HomeController _homeController = Get.find();
+  final DateTime? time;
+  late final DayPeriod _period;
+  late final int _hour;
+  late final int _minute;
+
+  ClockContentWidget({this.time}) {
+    var dayOfTime = cmn.DateTimeUtils.getDayOfTime(time: time);
+    _period = dayOfTime.period;
+    _hour = dayOfTime.hourOfPeriod;
+    _minute = dayOfTime.minute;
+  }
+
+  @override
+  Widget build(context) => Padding(
+        padding: EdgeInsets.only(
+          top: Constant.dialogTopPadding.h,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                textBaseline: TextBaseline.ideographic,
+                children: [
+                  ToggleButtons(
+                    isSelected: [
+                      _period == DayPeriod.am,
+                      _period == DayPeriod.pm,
+                    ],
+                    direction: Axis.vertical,
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(cmn.Constant.defaultBorderRadius),
+                    ),
+                    borderWidth: Constant.dialogBorderWidth,
+                    constraints: BoxConstraints(
+                      minHeight: Constant.dayPeriodHeight.h,
+                      minWidth: Constant.dayPeriodWidth.w,
+                    ),
+                    textStyle: TextStyle(
+                      fontSize: Constant.dayPeriodFontSize.sp,
+                    ),
+                    children: cmn.TimeSection.values
+                        .map(
+                          (section) => Text(section.string),
+                        )
+                        .toList(),
+                    onPressed: (index) => print(index),
+                  ),
+                  _timeField(12, 1, _hour),
+                  Text(
+                    ':',
+                    style: TextStyle(
+                      fontSize: 50.sp,
+                    ),
+                  ),
+                  _timeField(59, 0, _minute),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+
+  Widget _timeField(int max, int min, int value) => Container(
+        width: Constant.timeFieldWidth.w,
+        alignment: Alignment.center,
+        child: TextFormField(
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(cmn.Constant.defaultBorderRadius),
+              ),
+            ),
+            disabledBorder: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(
+              vertical: Constant.timeFieldContentPadding,
+            ),
+          ),
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(2),
+            cmn.TimeRangeFormatter(max: max, min: min),
+          ],
+          textAlign: TextAlign.center,
+          textAlignVertical: TextAlignVertical.center,
+          style: TextStyle(
+            fontSize: Constant.timeFieldFontSizePadding.sp,
+            height: 1, // 1 make text align vertical center
+          ),
+          initialValue: value.toString().padLeft(2, Constant.timeFieldContentLeadingZero),
         ),
       );
 }

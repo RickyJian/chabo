@@ -38,4 +38,23 @@ class Constant {
   static const double notificationTextPadding = 2;
   static const double notificationBoxShadowSpreadRadius = 1;
   static const double notificationBoxShadowBlurRadius = 10;
+
+  /// dialog
+  static const double dialogTopPadding = 1;
+  static const double dialogTimeSectionHeight = 5;
+  static const double dialogTimeSectionWidth = 17;
+  static const double dialogTimeSectionFontSize = 10;
+  static const double dialogBorderWidth = 1.5;
+
+  /// day period
+  static const double dayPeriodHeight = 5;
+  static const double dayPeriodWidth = 12;
+  static const double dayPeriodFontSize = 16;
+
+  /// time field
+  static const double timeFieldWidth = 25;
+  static const double timeFieldContentWidth = 25;
+  static const double timeFieldContentPadding = 10;
+  static const double timeFieldFontSizePadding = 50;
+  static const String timeFieldContentLeadingZero = '0';
 }
