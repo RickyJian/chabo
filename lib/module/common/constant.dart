@@ -17,7 +17,7 @@ class Constant {
   static const double defaultBorderRadius = 10;
 
   /// dialog constant
-  static final double dialogMarginTop = AppBar().preferredSize.height;
+  static final double dialogMarginTop = AppBar().preferredSize.height/2;
   static const double dialogMarginHorizontal = 5;
   static const double dialogElevation = 30;
   static const double dialogBorderRadius = defaultBorderRadius;

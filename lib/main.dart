@@ -1,4 +1,3 @@
-import 'package:chabo/constant.dart';
 import 'package:chabo/module/modules.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import 'module/home/home.dart';
+import 'module/common/common.dart' as cmn;
 
 void main() => runApp(MyApp());
 
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
           fallbackLocale: Message.englishLocale,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            fontFamily: Constant.fontFamily,
+            fontFamily: cmn.Constant.fontFamily,
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
             useMaterial3: true,
           ),
@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
 
 class AppPage extends StatelessWidget {
   final HomeController _homeController = Get.put(HomeController());
+  final FormController _formController = Get.put(FormController());
 
   @override
   Widget build(context) => Scaffold(
@@ -41,7 +42,7 @@ class AppPage extends StatelessWidget {
             alignment: Alignment.center,
             onPressed: () => Get.to(
               SettingPage(),
-              duration: const Duration(milliseconds: Constant.navigationDuration),
+              duration: const Duration(milliseconds: cmn.Constant.navigationDuration),
               transition: Transition.leftToRight,
             ),
           ),
@@ -52,7 +53,10 @@ class AppPage extends StatelessWidget {
         body: GetX<HomeController>(
           init: _homeController,
           builder: (home) => ListView(
-            children: home.clocks.map((clock) => ClockWidget(component: clock)).toList(),
+            children: home.clocks
+                .map((clock) =>
+                    ClockWidget(component: clock, isLast: home.clocks.indexOf(clock) == home.clocks.length - 1))
+                .toList(),
           ),
         ),
         floatingActionButton: Row(
@@ -60,8 +64,8 @@ class AppPage extends StatelessWidget {
           children: [
             Container(
               margin: EdgeInsets.only(
-                left: Constant.fabLeftMargin.w,
-                bottom: Constant.fabBottomMargin.h,
+                left: cmn.Constant.fabLeftMargin.w,
+                bottom: cmn.Constant.fabBottomMargin.h,
               ),
               child: FloatingActionButton(
                 heroTag: null,
@@ -73,15 +77,49 @@ class AppPage extends StatelessWidget {
             ),
             Container(
               margin: EdgeInsets.only(
-                left: Constant.fabLeftMargin.w,
-                bottom: Constant.fabBottomMargin.h,
+                left: cmn.Constant.fabLeftMargin.w,
+                bottom: cmn.Constant.fabBottomMargin.h,
               ),
               child: FloatingActionButton(
                 heroTag: null,
                 child: const FaIcon(
                   FontAwesomeIcons.plus,
                 ),
-                onPressed: () => print('open dialog'),
+                onPressed: () {
+                  _formController.setTime(DateTime.now().add(const Duration(minutes: 10)));
+                  Get.dialog(
+                    barrierDismissible: false,
+                    cmn.DialogWidget(
+                      title: cmn.Message.clockCreateTitle.tr,
+                      contents: GetX<FormController>(
+                        init: _formController,
+                        builder: (form) => ClockFormWidget(
+                          clock: form.clock.value,
+                          hourController: form.hourController,
+                          minuteController: form.minuteController,
+                          onPressDayPeriod: form.onPressDayPeriod,
+                          toggleEnable: form.toggleEnable,
+                          toggleWeekday: form.toggleWeekday,
+                          toggleVibration: form.toggleVibration,
+                        ),
+                      ),
+                      footer: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          cmn.DialogFooterButton(
+                            label: cmn.Message.cancel.tr,
+                            onPressed: () => Get.back(),
+                          ),
+                          cmn.DialogFooterButton(
+                            label: cmn.Message.save.tr,
+                            onPressed: () => _formController.save(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             )
           ],

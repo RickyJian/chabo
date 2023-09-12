@@ -8,33 +8,68 @@ import '../controller.dart';
 import 'constant.dart';
 
 class ClockComponent {
-  final int id;
-  final int hour;
-  final int minute;
-  final DayPeriod period;
-  final String name;
-  final List<cmn.Weekday> weekdays;
-  final bool isLast;
+  int id;
+  int hour;
+  int minute;
+  DayPeriod period;
+  String name;
+  List<cmn.Weekday> weekdays;
   cmn.Status status;
+  bool vibration;
 
-  // TODO: add diff time, ringtone, and shake
+  // TODO: add diff time, ringtone
 
   ClockComponent(
-      {required this.id,
-      required this.hour,
-      required this.minute,
-      required this.period,
-      required this.name,
-      required this.weekdays,
-      required this.isLast,
-      this.status = cmn.Status.enabled});
+      {this.id = -1,
+      this.hour = 1,
+      this.minute = 0,
+      this.period = DayPeriod.am,
+      this.name = '',
+      this.weekdays = cmn.Weekday.values,
+      this.status = cmn.Status.enabled,
+      this.vibration = true});
+
+  ClockComponent.init(TimeOfDay t)
+      : id = DateTime.now().microsecondsSinceEpoch,
+        hour = t.hourOfPeriod,
+        minute = t.minute,
+        period = t.period,
+        name = '',
+        weekdays = cmn.Weekday.values,
+        status = cmn.Status.enabled,
+        vibration = true;
+
+  toggleWeekdays(cmn.Weekday weekday) {
+    if (weekdays.contains(weekday)) {
+      weekdays.remove(weekday);
+    } else {
+      weekdays.add(weekday);
+      weekdays.sort((left, right) {
+        if (left.index < right.index) {
+          return -1;
+        } else if (left.index == right.index) {
+          return 0;
+        }
+        // left.index > right.index
+        return 1;
+      });
+    }
+    if (weekdays.isEmpty) {
+      weekdays.addAll(cmn.Weekday.values);
+    }
+  }
+
+  toggleEnable(cmn.Status status) => this.status = status;
+
+  onPressDayPeriod(int index) => index == 0 ? period = DayPeriod.am : period = DayPeriod.pm;
 }
 
 class ClockWidget extends StatelessWidget {
   final ClockComponent component;
   final HomeController _homeController = Get.find();
+  final bool isLast;
 
-  ClockWidget({required this.component});
+  ClockWidget({required this.component, this.isLast = false});
 
   @override
   Widget build(context) => Card(
@@ -42,7 +77,7 @@ class ClockWidget extends StatelessWidget {
           top: Constant.outerMarginTop.h,
           left: Constant.outerMarginWidth.w,
           right: Constant.outerMarginWidth.w,
-          bottom: component.isLast ? Constant.outerMarginBottom.h : 0,
+          bottom: isLast ? Constant.outerMarginBottom.h : 0,
         ),
         child: Container(
           margin: EdgeInsets.symmetric(
@@ -96,7 +131,7 @@ class ClockWidget extends StatelessWidget {
                   const Spacer(),
                   Switch(
                     value: component.status == cmn.Status.enabled ? true : false,
-                    onChanged: (_) => _homeController.toggleEnable(component),
+                    onChanged: (value) => _homeController.toggleEnable(component, value),
                   ),
                 ],
               ),
@@ -210,88 +245,222 @@ class ClockWidget extends StatelessWidget {
       );
 }
 
-class ClockContentWidget extends StatelessWidget {
-  final HomeController _homeController = Get.find();
-  final DateTime? time;
-  late final DayPeriod _period;
-  late final int _hour;
-  late final int _minute;
+class ClockFormWidget extends StatelessWidget {
+  final ClockComponent clock;
+  final TextEditingController hourController;
+  final TextEditingController minuteController;
+  final Function(int index)? onPressDayPeriod;
+  final Function(bool value)? toggleEnable;
+  final Function(cmn.Weekday weekday)? toggleWeekday;
+  final Function(bool value)? toggleVibration;
 
-  ClockContentWidget({this.time}) {
-    var dayOfTime = cmn.DateTimeUtils.getDayOfTime(time: time);
-    _period = dayOfTime.period;
-    _hour = dayOfTime.hourOfPeriod;
-    _minute = dayOfTime.minute;
-  }
+  const ClockFormWidget(
+      {required this.clock,
+      required this.hourController,
+      required this.minuteController,
+      this.onPressDayPeriod,
+      this.toggleEnable,
+      this.toggleWeekday,
+      this.toggleVibration});
 
   @override
   Widget build(context) => Padding(
-        padding: EdgeInsets.only(
-          top: Constant.dialogTopPadding.h,
+        padding: EdgeInsets.symmetric(
+          vertical: Constant.dialogVerticalPadding.h,
         ),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                textBaseline: TextBaseline.ideographic,
-                children: [
-                  ToggleButtons(
-                    isSelected: [
-                      _period == DayPeriod.am,
-                      _period == DayPeriod.pm,
-                    ],
-                    direction: Axis.vertical,
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(cmn.Constant.defaultBorderRadius),
+              SizedBox(
+                width: double.infinity,
+                height: (Constant.dialogRowHeight * 2).h,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ToggleButtons(
+                      isSelected: [
+                        clock.period == DayPeriod.am,
+                        clock.period == DayPeriod.pm,
+                      ],
+                      direction: Axis.vertical,
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(cmn.Constant.defaultBorderRadius),
+                      ),
+                      borderWidth: Constant.dialogBorderWidth,
+                      constraints: BoxConstraints(
+                        minHeight: Constant.dayPeriodHeight.h,
+                        minWidth: Constant.dayPeriodWidth.w,
+                      ),
+                      textStyle: TextStyle(
+                        fontSize: Constant.dayPeriodFontSize.sp,
+                      ),
+                      children: DayPeriod.values
+                          .map(
+                            (section) => Text(section.localize),
+                          )
+                          .toList(),
+                      onPressed: (index) => onPressDayPeriod == null ? null : onPressDayPeriod!(index),
                     ),
-                    borderWidth: Constant.dialogBorderWidth,
-                    constraints: BoxConstraints(
-                      minHeight: Constant.dayPeriodHeight.h,
-                      minWidth: Constant.dayPeriodWidth.w,
+                    _timeField(hourController, 12, 1, clock.hour, cmn.Message.hourLong.tr),
+                    Text(
+                      ':',
+                      style: TextStyle(
+                        fontSize: Constant.timeFieldFontSize.sp,
+                      ),
                     ),
-                    textStyle: TextStyle(
-                      fontSize: Constant.dayPeriodFontSize.sp,
+                    _timeField(minuteController, 59, 0, clock.minute, cmn.Message.minuteLong.tr),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: Constant.dialogRowHeight.h,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.label_outline_rounded,
+                      size: Constant.dialogLabelFontSize.sp,
                     ),
-                    children: DayPeriod.values
+                    Container(
+                      width: Constant.labelFieldWidth.w,
+                      alignment: Alignment.center,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 10,
+                          ),
+                          // TODO: add limit to be suffix
+                          hintText: cmn.Message.labelHint.tr,
+                        ),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                        textAlign: TextAlign.left,
+                        textAlignVertical: TextAlignVertical.center,
+                        style: TextStyle(
+                          fontSize: Constant.dialogLabelFontSize.sp,
+                          height: 1, // 1 make text align vertical center
+                        ),
+                        initialValue: '',
+                      ),
+                    ),
+                    Switch(
+                      value: clock.status == cmn.Status.enabled ? true : false,
+                      onChanged: (value) => toggleEnable == null ? null : toggleEnable!(value),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                height: Constant.dialogRowHeight.h,
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: EdgeInsets.only(top: Constant.weekdayPaddingTop.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: cmn.Weekday.values
                         .map(
-                          (section) => Text(section.localize),
+                          (weekday) => Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: Constant.weekdayBorderWidth,
+                                ),
+                                color: clock.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
+                                shape: BoxShape.circle,
+                              ),
+                              height: Constant.weekdaySize.h,
+                              width: Constant.weekdaySize.w,
+                              child: InkWell(
+                                borderRadius: const BorderRadius.all(Radius.circular(Constant.weekdayCircularRadius)),
+                                child: Center(
+                                  child: Text(weekday.string),
+                                ),
+                                onTap: () => toggleWeekday == null ? null : toggleWeekday!(weekday),
+                              ),
+                            ),
+                          ),
                         )
                         .toList(),
-                    onPressed: (index) => print(index),
                   ),
-                  _timeField(12, 1, _hour),
-                  Text(
-                    ':',
-                    style: TextStyle(
-                      fontSize: 50.sp,
+                ),
+              ),
+              InkWell(
+                borderRadius: BorderRadius.circular(cmn.Constant.defaultBorderRadius),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: Constant.dialogRowHeight.h,
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    // crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.notifications_active_outlined,
+                        size: Constant.labelFontSize.sp * Constant.labelFontRatio,
+                      ),
+                      const Spacer(),
+                      Text(
+                        'ringtone',
+                        style: TextStyle(
+                          fontSize: Constant.labelFontSize.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: () => print('${Get.mediaQuery.viewInsets.bottom}'),
+              ),
+              Container(
+                width: double.infinity,
+                height: Constant.dialogRowHeight.h,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.vibration_outlined,
+                      size: Constant.labelFontSize.sp * Constant.labelFontRatio,
                     ),
-                  ),
-                  _timeField(59, 0, _minute),
-                ],
+                    const Spacer(),
+                    Switch(
+                      value: clock.vibration,
+                      onChanged: (value) => toggleVibration == null ? null : toggleVibration!(value),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         ),
       );
 
-  Widget _timeField(int max, int min, int value) => Container(
+  Widget _timeField(TextEditingController controller, int max, int min, int value, String labelText) => Container(
         width: Constant.timeFieldWidth.w,
         alignment: Alignment.center,
         child: TextFormField(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(
+          controller: controller,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(cmn.Constant.defaultBorderRadius),
               ),
             ),
-            disabledBorder: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(
-              vertical: Constant.timeFieldContentPadding,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: Constant.timeFieldContentHorizontalPadding,
+              vertical: Constant.timeFieldContentVerticalPadding,
             ),
+            labelText: labelText,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
           ),
           keyboardType: TextInputType.number,
           inputFormatters: [
@@ -305,7 +474,7 @@ class ClockContentWidget extends StatelessWidget {
             fontSize: Constant.timeFieldFontSizePadding.sp,
             height: 1, // 1 make text align vertical center
           ),
-          initialValue: value.toString().padLeft(2, Constant.timeFieldContentLeadingZero),
+          // initialValue: value.toString().padLeft(2, Constant.timeFieldContentLeadingZero),
         ),
       );
 }

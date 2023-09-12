@@ -18,9 +18,12 @@ class Message extends Translations {
   /// clock
   static const String dayPeriodAM = 'CLOCK_TIME_SECTION_AM';
   static const String dayPeriodPM = 'CLOCK_TIME_SECTION_PM';
+  static const String clockCreateTitle = 'CLOCK_CREATE_TITLE';
 
   /// label
+  static const String label = 'LABEL';
   static const String labelEmpty = 'LABEL_EMPTY';
+  static const String labelHint = 'LABEL_HINT';
 
   /// weekday
   static const String weekdaySUN = 'WEEKDAY_SUN';
@@ -33,8 +36,12 @@ class Message extends Translations {
 
   /// common
   static const String dayShort = 'DAY';
-  static const String hourShort = 'HOUR';
-  static const String minuteShort = 'MINUTE';
+  static const String hourShort = 'HOUR_SHORT';
+  static const String minuteShort = 'MINUTE_SHORT';
+  static const String hourLong = 'HOUR';
+  static const String minuteLong = 'MINUTE';
+  static const String cancel = 'CANCEL';
+  static const String save = 'SAVE';
 
   /// info message
   static const String infoMsgWeekdayIsEmpty = 'MSG_WEEKDAY_IS_EMPTY';
@@ -57,8 +64,15 @@ class Message extends Translations {
           dayShort: 'D',
           hourShort: 'H',
           minuteShort: 'M',
+          hourLong: 'Hour',
+          minuteLong: 'Minute',
+          label: 'Label',
           labelEmpty: 'empty label',
+          labelHint: 'input label',
           infoMsgWeekdayIsEmpty: 'When week days are disabled, will set every day enabled.',
+          cancel: 'cancel',
+          save: 'save',
+          clockCreateTitle: 'New Alarm Clock',
         },
         'zh_TW': {
           appTitle: '日本矮雞',
@@ -74,8 +88,15 @@ class Message extends Translations {
           dayShort: '天',
           hourShort: '時',
           minuteShort: '分',
+          hourLong: '小時',
+          minuteLong: '分鐘',
+          label: '標籤',
           labelEmpty: '未設定標籤',
+          labelHint: '請輸入標籤',
           infoMsgWeekdayIsEmpty: '當星期皆為非啟用時，自動將每天設定為啟用。',
+          cancel: '取消',
+          save: '存檔',
+          clockCreateTitle: '新增鬧鐘',
         }
       };
 }

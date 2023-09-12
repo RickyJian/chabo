@@ -40,11 +40,13 @@ class Constant {
   static const double notificationBoxShadowBlurRadius = 10;
 
   /// dialog
-  static const double dialogTopPadding = 1;
+  static const double dialogVerticalPadding = 0.5;
   static const double dialogTimeSectionHeight = 5;
   static const double dialogTimeSectionWidth = 17;
   static const double dialogTimeSectionFontSize = 10;
   static const double dialogBorderWidth = 1.5;
+  static const double dialogRowHeight = 7;
+  static const double dialogLabelFontSize = 26;
 
   /// day period
   static const double dayPeriodHeight = 5;
@@ -54,7 +56,12 @@ class Constant {
   /// time field
   static const double timeFieldWidth = 25;
   static const double timeFieldContentWidth = 25;
-  static const double timeFieldContentPadding = 10;
+  static const double timeFieldFontSize = 50;
+  static const double timeFieldContentHorizontalPadding = 5;
+  static const double timeFieldContentVerticalPadding = 10;
   static const double timeFieldFontSizePadding = 50;
   static const String timeFieldContentLeadingZero = '0';
+
+  /// label field
+  static const double labelFieldWidth = 50;
 }
