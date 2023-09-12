@@ -6,10 +6,10 @@ import 'constant.dart';
 class DialogWidget extends StatelessWidget {
   final String title;
   final Widget contents;
-  final double? contentRatio;
+  final double? contentHeight;
   final Widget? footer;
 
-  const DialogWidget({required this.title, required this.contents, this.contentRatio, this.footer});
+  const DialogWidget({required this.title, required this.contents, this.contentHeight, this.footer});
 
   @override
   Widget build(context) => Column(
@@ -67,7 +67,7 @@ class DialogWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: contentRatio ?? Constant.dialogContentHeight.h,
+                  height: contentHeight ?? Constant.dialogContentHeight.h,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       vertical: Constant.dialogInnerPaddingVertical.h,
