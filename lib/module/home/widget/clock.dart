@@ -59,6 +59,8 @@ class ClockComponent {
     }
   }
 
+  bool isWeekdaysEmpty(cmn.Weekday weekday) => !(weekdays.length > 1 || !weekdays.contains(weekday));
+
   toggleEnable(cmn.Status status) => this.status = status;
 
   onPressDayPeriod(int index) => index == 0 ? period = DayPeriod.am : period = DayPeriod.pm;
@@ -191,52 +193,12 @@ class ClockWidget extends StatelessWidget {
               child: Text(weekday.string),
             ),
             onTap: () {
-              if (_homeController.isWeekdaysEmpty(clock.weekdays, weekday)) {
-                Get.rawSnackbar(
-                    messageText: SizedBox(
-                      height: Constant.notificationHeight.h,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Icon(
-                              Icons.info_outline_rounded,
-                              color: Colors.white,
-                              size: Constant.notificationIconSize.sp,
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(right: Constant.notificationTextPadding),
-                          ),
-                          Expanded(
-                            flex: 9,
-                            child: Text(
-                              cmn.Message.infoMsgWeekdayIsEmpty.tr,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    margin: EdgeInsets.only(
-                      left: Constant.notificationMarginWidth.w,
-                      right: Constant.notificationMarginWidth.w,
-                      bottom: Constant.notificationMarginBottom.h,
-                    ),
-                    boxShadows: [
-                      const BoxShadow(
-                        color: Colors.black54,
-                        offset: Offset(0, 10),
-                        spreadRadius: Constant.notificationBoxShadowSpreadRadius,
-                        blurRadius: Constant.notificationBoxShadowBlurRadius,
-                      )
-                    ],
-                    borderRadius: Constant.notificationBorderRadius,
-                    snackPosition: SnackPosition.BOTTOM,
-                    snackStyle: SnackStyle.FLOATING,
-                    duration: const Duration(seconds: 2));
+              if (clock.isWeekdaysEmpty(weekday)) {
+                cmn.Snackbar.getSnackbar(
+                  height: Constant.notificationHeight.h,
+                  iconSize: Constant.notificationIconSize.sp,
+                  message: cmn.Message.infoMsgWeekdayIsEmpty.tr,
+                );
               }
               _homeController.toggleWeekday(clock, weekday);
             },
@@ -247,9 +209,10 @@ class ClockWidget extends StatelessWidget {
 
 class ClockFormWidget extends StatelessWidget {
   final ClockComponent clock;
-  final TextEditingController hourController;
-  final TextEditingController minuteController;
+  final cmn.TextEditComponent hourController;
+  final cmn.TextEditComponent minuteController;
   final Function(int index)? onPressDayPeriod;
+  final cmn.TextEditComponent labelController;
   final Function(bool value)? toggleEnable;
   final Function(cmn.Weekday weekday)? toggleWeekday;
   final Function(bool value)? toggleVibration;
@@ -258,6 +221,7 @@ class ClockFormWidget extends StatelessWidget {
       {required this.clock,
       required this.hourController,
       required this.minuteController,
+      required this.labelController,
       this.onPressDayPeriod,
       this.toggleEnable,
       this.toggleWeekday,
@@ -304,7 +268,7 @@ class ClockFormWidget extends StatelessWidget {
                           .toList(),
                       onPressed: (index) => onPressDayPeriod == null ? null : onPressDayPeriod!(index),
                     ),
-                    _timeField(hourController, 12, 1, clock.hour, cmn.Message.hourLong.tr),
+                    _timeField(hourController, 12, 0, clock.hour, cmn.Message.hourLong.tr),
                     Text(
                       ':',
                       style: TextStyle(
@@ -319,7 +283,7 @@ class ClockFormWidget extends StatelessWidget {
                 width: double.infinity,
                 height: Constant.dialogRowHeight.h,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(
@@ -330,6 +294,8 @@ class ClockFormWidget extends StatelessWidget {
                       width: Constant.labelFieldWidth.w,
                       alignment: Alignment.center,
                       child: TextFormField(
+                        controller: labelController.controller,
+                        focusNode: labelController.node,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
@@ -344,11 +310,11 @@ class ClockFormWidget extends StatelessWidget {
                         ],
                         textAlign: TextAlign.left,
                         textAlignVertical: TextAlignVertical.center,
+                        onFieldSubmitted: (_) => labelController.node?.unfocus(),
                         style: TextStyle(
                           fontSize: Constant.dialogLabelFontSize.sp,
                           height: 1, // 1 make text align vertical center
                         ),
-                        initialValue: '',
                       ),
                     ),
                     Switch(
@@ -385,7 +351,16 @@ class ClockFormWidget extends StatelessWidget {
                                 child: Center(
                                   child: Text(weekday.string),
                                 ),
-                                onTap: () => toggleWeekday == null ? null : toggleWeekday!(weekday),
+                                onTap: () {
+                                  if (clock.isWeekdaysEmpty(weekday)) {
+                                    cmn.Snackbar.getSnackbar(
+                                      height: Constant.notificationHeight.h,
+                                      iconSize: Constant.notificationIconSize.sp,
+                                      message: cmn.Message.infoMsgWeekdayIsEmpty.tr,
+                                    );
+                                  }
+                                  toggleWeekday == null ? null : toggleWeekday!(weekday);
+                                },
                               ),
                             ),
                           ),
@@ -444,11 +419,13 @@ class ClockFormWidget extends StatelessWidget {
         ),
       );
 
-  Widget _timeField(TextEditingController controller, int max, int min, int value, String labelText) => Container(
+  Widget _timeField(cmn.TextEditComponent controller, int max, int min, int value, String labelText) => Container(
         width: Constant.timeFieldWidth.w,
         alignment: Alignment.center,
         child: TextFormField(
-          controller: controller,
+          controller: controller.controller,
+          focusNode: controller.node,
+          autofocus: controller.autoFocus,
           decoration: InputDecoration(
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(
@@ -470,11 +447,12 @@ class ClockFormWidget extends StatelessWidget {
           ],
           textAlign: TextAlign.center,
           textAlignVertical: TextAlignVertical.center,
+          textInputAction: TextInputAction.next,
+          onFieldSubmitted: (_) => controller.nextNode?.requestFocus(),
           style: TextStyle(
             fontSize: Constant.timeFieldFontSizePadding.sp,
             height: 1, // 1 make text align vertical center
           ),
-          // initialValue: value.toString().padLeft(2, Constant.timeFieldContentLeadingZero),
         ),
       );
 }

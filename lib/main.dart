@@ -98,6 +98,7 @@ class AppPage extends StatelessWidget {
                           hourController: form.hourController,
                           minuteController: form.minuteController,
                           onPressDayPeriod: form.onPressDayPeriod,
+                          labelController: form.labelController,
                           toggleEnable: form.toggleEnable,
                           toggleWeekday: form.toggleWeekday,
                           toggleVibration: form.toggleVibration,
