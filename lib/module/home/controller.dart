@@ -55,19 +55,37 @@ class HomeController extends GetxController {
 
 class FormController extends GetxController {
   final HomeController _homeController = Get.find();
-  final TextEditingController hourController = TextEditingController(text: '01');
-  final TextEditingController minuteController = TextEditingController(text: '00');
-
+  late final cmn.TextEditComponent hourController;
+  late final cmn.TextEditComponent minuteController;
+  late final cmn.TextEditComponent labelController;
   var clock = ClockComponent().obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    hourController =
+        cmn.TextEditComponent(controller: TextEditingController(text: '01'), autoFocus: true, node: FocusNode());
+    minuteController = cmn.TextEditComponent(controller: TextEditingController(text: '00'), node: FocusNode());
+    labelController = cmn.TextEditComponent(controller: TextEditingController(), node: FocusNode());
+    hourController.nextNode = minuteController.node;
+    minuteController.nextNode = labelController.node;
+  }
+
+  @override
+  void onClose() {
+    hourController.controller.dispose();
+    minuteController.controller.dispose();
+    labelController.controller.dispose();
+  }
 
   Future<void> setTime(DateTime t) async {
     var d = TimeOfDay.fromDateTime(t);
     clock.value
-      ..hour = d.hour
+      ..hour = d.hourOfPeriod
       ..minute = d.minute
       ..period = d.period;
-    hourController.text = d.hour.toString().padLeft(2, '0');
-    minuteController.text = d.minute.toString().padLeft(2, '0');
+    hourController.controller.text = clock.value.hour.toString().padLeft(2, '0');
+    minuteController.controller.text = clock.value.minute.toString().padLeft(2, '0');
     clock.refresh();
   }
 
