@@ -17,7 +17,7 @@ class Constant {
   static const double defaultBorderRadius = 10;
 
   /// dialog constant
-  static final double dialogMarginTop = AppBar().preferredSize.height/2;
+  static final double dialogMarginTop = AppBar().preferredSize.height / 2;
   static const double dialogMarginHorizontal = 5;
   static const double dialogElevation = 30;
   static const double dialogBorderRadius = defaultBorderRadius;
@@ -34,4 +34,12 @@ class Constant {
   /// dialog footer
   static const double dialogTextFontSize = 14;
   static const double dialogTextButtonPadding = 12;
+
+  /// snackbar
+  static const double notificationBorderRadius = 5;
+  static const double notificationMarginWidth = 5;
+  static const double notificationMarginBottom = 2.5;
+  static const double notificationTextPadding = 2;
+  static const double notificationBoxShadowSpreadRadius = 1;
+  static const double notificationBoxShadowBlurRadius = 10;
 }
