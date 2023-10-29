@@ -95,18 +95,15 @@ class FormController extends GetxController {
   }
 
   toggleEnable(bool enabled) {
-    var status = cmn.Status.enabled;
-    if (!enabled) {
-      status = cmn.Status.disabled;
-    }
-    clock.value.toggleEnable(status);
+    clock.value.toggleEnable(enabled ? cmn.Status.enabled : cmn.Status.disabled);
     clock.refresh();
   }
 
+  // TODO: research why directly add or remove weekday from list will meet unmodifiable list error
   toggleWeekday(cmn.Weekday weekday) {
-    // TODO: research why directly add or remove weekday from list will meet unmodifiable list error
-    clock.value.weekdays = List<cmn.Weekday>.from(clock.value.weekdays);
-    clock.value.toggleWeekdays(weekday);
+    clock.value
+      ..weekdays = List<cmn.Weekday>.from(clock.value.weekdays)
+      ..toggleWeekdays(weekday);
     clock.refresh();
   }
 

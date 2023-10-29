@@ -54,8 +54,11 @@ class AppPage extends StatelessWidget {
           init: _homeController,
           builder: (home) => ListView(
             children: home.clocks
-                .map((clock) =>
-                    ClockWidget(component: clock, isLast: home.clocks.indexOf(clock) == home.clocks.length - 1))
+                .map((clock) => ClockWidget(
+                    component: clock,
+                    isLast: home.clocks.indexOf(clock) == home.clocks.length - 1,
+                    toggleEnable: (enabled) => home.toggleEnable(clock, enabled),
+                    toggleWeekday: (weekday) => home.toggleWeekday(clock, weekday)))
                 .toList(),
           ),
         ),

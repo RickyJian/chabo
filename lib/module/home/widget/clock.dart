@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
-import '../controller.dart';
 import 'constant.dart';
 
 class ClockComponent {
@@ -68,10 +67,11 @@ class ClockComponent {
 
 class ClockWidget extends StatelessWidget {
   final ClockComponent component;
-  final HomeController _homeController = Get.find();
   final bool isLast;
+  final Function(bool value)? toggleEnable;
+  final Function(cmn.Weekday weekday)? toggleWeekday;
 
-  ClockWidget({required this.component, this.isLast = false});
+  const ClockWidget({required this.component, this.isLast = false, this.toggleEnable, this.toggleWeekday});
 
   @override
   Widget build(context) => Card(
@@ -129,11 +129,31 @@ class ClockWidget extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _iconLabel(component.name),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: Constant.labelIconPaddingRight.w),
+                        child: Icon(
+                          color: component.name.isEmpty ? Colors.black45 : Colors.black,
+                          Icons.label_outline_rounded,
+                          size: Constant.labelFontSize.sp * Constant.labelFontRatio,
+                        ),
+                      ),
+                      Text(
+                        component.name.isEmpty ? cmn.Message.labelEmpty.tr : component.name,
+                        style: TextStyle(
+                          color: component.name.isEmpty ? Colors.black45 : Colors.black,
+                          fontSize: Constant.labelFontSize.sp,
+                        ),
+                      ),
+                    ],
+                  ),
                   const Spacer(),
                   Switch(
                     value: component.status == cmn.Status.enabled ? true : false,
-                    onChanged: (value) => _homeController.toggleEnable(component, value),
+                    onChanged: (value) => toggleEnable == null ? null : toggleEnable!(value),
                   ),
                 ],
               ),
@@ -143,65 +163,43 @@ class ClockWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: cmn.Weekday.values
                       .map(
-                        (weekday) => _weekday(component, weekday),
+                        (weekday) => Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.black,
+                                width: Constant.weekdayBorderWidth,
+                              ),
+                              color: component.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                            height: Constant.weekdaySize.h,
+                            width: Constant.weekdaySize.w,
+                            child: InkWell(
+                              borderRadius: const BorderRadius.all(Radius.circular(Constant.weekdayCircularRadius)),
+                              child: Center(
+                                child: Text(weekday.string),
+                              ),
+                              onTap: () {
+                                if (component.isWeekdaysEmpty(weekday)) {
+                                  cmn.Snackbar.getSnackbar(
+                                    height: Constant.notificationHeight.h,
+                                    iconSize: Constant.notificationIconSize.sp,
+                                    message: cmn.Message.infoMsgWeekdayIsEmpty.tr,
+                                  );
+                                }
+                                if (toggleWeekday != null) {
+                                  toggleWeekday!(weekday);
+                                }
+                              },
+                            ),
+                          ),
+                        ),
                       )
                       .toList(),
                 ),
               ),
             ],
-          ),
-        ),
-      );
-
-  Widget _iconLabel(String name) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(right: Constant.labelIconPaddingRight.w),
-            child: Icon(
-              color: name.isEmpty ? Colors.black45 : Colors.black,
-              Icons.label_outline_rounded,
-              size: Constant.labelFontSize.sp * Constant.labelFontRatio,
-            ),
-          ),
-          Text(
-            name.isEmpty ? cmn.Message.labelEmpty.tr : name,
-            style: TextStyle(
-              color: name.isEmpty ? Colors.black45 : Colors.black,
-              fontSize: Constant.labelFontSize.sp,
-            ),
-          ),
-        ],
-      );
-
-  Widget _weekday(ClockComponent clock, cmn.Weekday weekday) => Expanded(
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.black,
-              width: Constant.weekdayBorderWidth,
-            ),
-            color: clock.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
-            shape: BoxShape.circle,
-          ),
-          height: Constant.weekdaySize.h,
-          width: Constant.weekdaySize.w,
-          child: InkWell(
-            borderRadius: const BorderRadius.all(Radius.circular(Constant.weekdayCircularRadius)),
-            child: Center(
-              child: Text(weekday.string),
-            ),
-            onTap: () {
-              if (clock.isWeekdaysEmpty(weekday)) {
-                cmn.Snackbar.getSnackbar(
-                  height: Constant.notificationHeight.h,
-                  iconSize: Constant.notificationIconSize.sp,
-                  message: cmn.Message.infoMsgWeekdayIsEmpty.tr,
-                );
-              }
-              _homeController.toggleWeekday(clock, weekday);
-            },
           ),
         ),
       );
