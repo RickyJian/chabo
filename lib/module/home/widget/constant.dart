@@ -2,42 +2,39 @@ class Constant {
   Constant._();
 
   /// card section
-  static const double outerMarginTop = 1.5;
-  static const double outerMarginWidth = 5;
-  static const double outerMarginBottom = 11;
-  static const double innerMarginVertical = 1;
-  static const double innerMarginHorizontal = 1;
-  static const double innerPaddingVertical = 0.5;
-  static const double innerPaddingHorizontal = 1;
+  static const double outerMarginTop = 15;
+  static const double outerMarginWidth = 15;
+  static const double outerMarginBottom = 80; // TODO: change to FAB height
+  static const double innerMarginVertical = 5;
+  static const double innerMarginHorizontal = 5;
+  static const double innerPaddingVertical = 5;
+  static const double innerPaddingHorizontal = 5;
 
   /// clock section
-  static const double timeFontSize = 30;
+  static const double timeFontSize = 40;
 
   /// faraway section
-  static const double farawayWidth = 100;
-  static const double farawayHeight = 2;
-  static const double farawayFontSize = 10;
+  static const double farawayWidth = 80;
+  static const double farawayHeight = 30;
+  static const double farawayFontSize = 15;
 
   /// label section
-  static const double labelIconPaddingRight = 1;
-  static const double labelFontSize = 13;
-  static const double labelFontRatio = 1.5;
+  static const double labelIconPaddingRight = 5;
+  static const double labelFontSize = 20;
+  static const double labelFontRatio = 1.2;
+
+  /// switch button
+  static const double switchWidth = 50;
 
   /// weekday section
-  static const double weekdaySize = 5;
+  static const double weekdaySize = 45;
   static const double weekdayBorderWidth = 1.5;
-  static const double weekdayPaddingTop = 1;
+  static const double weekdayPaddingTop = 5;
   static const double weekdayCircularRadius = 360;
 
   /// notification
-  static const double notificationIconSize = 23;
-  static const double notificationHeight = 5;
-  static const double notificationBorderRadius = 5;
-  static const double notificationMarginWidth = 5;
-  static const double notificationMarginBottom = 2.5;
-  static const double notificationTextPadding = 2;
-  static const double notificationBoxShadowSpreadRadius = 1;
-  static const double notificationBoxShadowBlurRadius = 10;
+  static const double notificationIconSize = 30;
+  static const double notificationHeight = 40;
 
   /// dialog
   static const double dialogVerticalPadding = 0.5;

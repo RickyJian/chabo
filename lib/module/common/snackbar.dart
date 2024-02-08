@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'constant.dart';
 
@@ -55,5 +55,4 @@ class Snackbar {
       duration: const Duration(seconds: 2),
     );
   }
-
 }

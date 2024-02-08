@@ -2,7 +2,7 @@ import 'package:chabo/module/common/common.dart' as cmn;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'constant.dart';
 
@@ -108,7 +108,7 @@ class ClockWidget extends StatelessWidget {
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.settings_rounded),
-                    onPressed: () => null,
+                    onPressed: () => null, // TODO: open setting dialog
                   ),
                 ],
               ),
@@ -116,12 +116,15 @@ class ClockWidget extends StatelessWidget {
                 width: Constant.farawayWidth.w,
                 height: Constant.farawayHeight.h,
                 child: component.status == cmn.Status.enabled
-                    ? Text(
-                        // TODO: make timer count down
-                        '2${cmn.Message.dayShort.tr}4${cmn.Message.hourShort.tr}30${cmn.Message.minuteShort.tr}',
-                        style: TextStyle(
-                          fontSize: Constant.farawayFontSize.sp,
-                          color: Colors.black45,
+                    ? Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          // TODO: make timer count down
+                          '2${cmn.Message.dayShort.tr}4${cmn.Message.hourShort.tr}30${cmn.Message.minuteShort.tr}',
+                          style: TextStyle(
+                            fontSize: Constant.farawayFontSize.sp,
+                            color: Colors.black45,
+                          ),
                         ),
                       )
                     : Container(),
@@ -130,7 +133,6 @@ class ClockWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Padding(
@@ -151,9 +153,15 @@ class ClockWidget extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  Switch(
-                    value: component.status == cmn.Status.enabled ? true : false,
-                    onChanged: (value) => toggleEnable == null ? null : toggleEnable!(value),
+                  SizedBox(
+                    width: Constant.switchWidth.w,
+                    child: FittedBox(
+                      alignment: Alignment.center,
+                      child: Switch(
+                        value: component.status == cmn.Status.enabled ? true : false,
+                        onChanged: (value) => toggleEnable == null ? null : toggleEnable!(value),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -173,8 +181,8 @@ class ClockWidget extends StatelessWidget {
                               color: component.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
                               shape: BoxShape.circle,
                             ),
-                            height: Constant.weekdaySize.h,
-                            width: Constant.weekdaySize.w,
+                            height: Constant.weekdaySize.r,
+                            width: Constant.weekdaySize.r,
                             child: InkWell(
                               borderRadius: const BorderRadius.all(Radius.circular(Constant.weekdayCircularRadius)),
                               child: Center(

@@ -1,8 +1,8 @@
 import 'package:chabo/module/modules.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:sizer/sizer.dart';
 
 import 'module/home/home.dart';
 import 'module/common/common.dart' as cmn;
@@ -11,8 +11,12 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
-  Widget build(context) => Sizer(
-        builder: (context, orientation, deviceType) => GetMaterialApp(
+  Widget build(context) {
+    ScreenUtil.init(context);
+    return ScreenUtilInit(
+      designSize: Size(ScreenUtil().screenWidth, ScreenUtil().screenHeight),
+      builder: (context, child) {
+        return GetMaterialApp(
           title: 'Chabo',
           translations: Message(),
           locale: Message.englishLocale,
@@ -23,9 +27,12 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
             useMaterial3: true,
           ),
-          home: AppPage(),
-        ),
-      );
+          home: child,
+        );
+      },
+      child: AppPage(),
+    );
+  }
 }
 
 class AppPage extends StatelessWidget {
