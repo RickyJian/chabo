@@ -5,6 +5,8 @@ class Constant {
 
   /// common
   static const String fontFamily = 'openhuninn';
+  static const double defaultBorderRadius = 10;
+  static const double defaultBorderWidth = 1.5;
 
   /// router
   static const int navigationDuration = 400;
@@ -13,22 +15,19 @@ class Constant {
   static const double fabLeftMargin = 3;
   static const double fabBottomMargin = 1.5;
 
-  /// common
-  static const double defaultBorderRadius = 10;
-
   /// dialog constant
   static final double dialogMarginTop = AppBar().preferredSize.height / 2;
-  static const double dialogMarginHorizontal = 5;
+  static const double dialogMarginHorizontal = 15;
   static const double dialogElevation = 30;
   static const double dialogBorderRadius = defaultBorderRadius;
-  static const double dialogInnerPaddingVertical = 1;
-  static const double dialogInnerPaddingHorizontal = 5;
-  static const double dialogHeaderHeight = 7;
-  static const double dialogContentHeight = 40;
-  static const double dialogFooterHeight = 7;
+  static const double dialogInnerPaddingVertical = 5;
+  static const double dialogInnerPaddingHorizontal = 15;
+  static const double dialogHeaderHeight = 50;
+  static const double dialogContentHeight = 360;
+  static const double dialogFooterHeight = 50;
   static const double dialogBorderSectionWidth = 2;
   static const double dialogBorderZeroWidth = 0;
-  static const double dialogHeaderFontSize = 16;
+  static const double dialogHeaderFontSize = 20;
   static const double dialogShadowBlurRadius = 2;
 
   /// dialog footer

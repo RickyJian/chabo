@@ -8,6 +8,9 @@ class Message extends Translations {
 
   Message._internal();
 
+  // common
+  static const String comma = ':';
+
   // support language
   static const englishLocale = Locale('en', 'US');
   static const chineseLocale = Locale('zh', 'TW');
@@ -33,6 +36,9 @@ class Message extends Translations {
   static const String weekdayTHU = 'WEEKDAY_THU';
   static const String weekdayFRI = 'WEEKDAY_FRI';
   static const String weekdaySAT = 'WEEKDAY_SAT';
+
+  /// ringtone
+  static const String ringtone = 'RINGTONE';
 
   /// common
   static const String dayShort = 'DAY';
@@ -61,6 +67,7 @@ class Message extends Translations {
           weekdayTHU: 'THU',
           weekdayFRI: 'FRI',
           weekdaySAT: 'SAT',
+          ringtone: 'ringtone',
           dayShort: 'D',
           hourShort: 'H',
           minuteShort: 'M',
@@ -85,6 +92,7 @@ class Message extends Translations {
           weekdayTHU: '四',
           weekdayFRI: '五',
           weekdaySAT: '六',
+          ringtone: '鈴聲',
           dayShort: '天',
           hourShort: '時',
           minuteShort: '分',

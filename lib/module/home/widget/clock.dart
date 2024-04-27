@@ -1,6 +1,8 @@
 import 'package:chabo/module/common/common.dart' as cmn;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -236,79 +238,92 @@ class ClockFormWidget extends StatelessWidget {
   @override
   Widget build(context) => Padding(
         padding: EdgeInsets.symmetric(
-          vertical: Constant.dialogVerticalPadding.h,
+          vertical: Constant.columnPaddingTop.h,
+          horizontal: Constant.dialogHzPadding.w,
         ),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // row: time
               SizedBox(
                 width: double.infinity,
                 height: (Constant.dialogRowHeight * 2).h,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ToggleButtons(
-                      isSelected: [
-                        clock.period == DayPeriod.am,
-                        clock.period == DayPeriod.pm,
-                      ],
-                      direction: Axis.vertical,
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(cmn.Constant.defaultBorderRadius),
-                      ),
-                      borderWidth: Constant.dialogBorderWidth,
-                      constraints: BoxConstraints(
-                        minHeight: Constant.dayPeriodHeight.h,
-                        minWidth: Constant.dayPeriodWidth.w,
-                      ),
-                      textStyle: TextStyle(
-                        fontSize: Constant.dayPeriodFontSize.sp,
-                      ),
-                      children: DayPeriod.values
-                          .map(
-                            (section) => Text(section.localize),
-                          )
-                          .toList(),
-                      onPressed: (index) => onPressDayPeriod == null ? null : onPressDayPeriod!(index),
-                    ),
-                    _timeField(hourController, 12, 0, clock.hour, cmn.Message.hourLong.tr),
-                    Text(
-                      ':',
-                      style: TextStyle(
-                        fontSize: Constant.timeFieldFontSize.sp,
+                    Flexible(
+                      flex: 1,
+                      child: ToggleButtons(
+                        isSelected: [
+                          clock.period == DayPeriod.am,
+                          clock.period == DayPeriod.pm,
+                        ],
+                        direction: Axis.vertical,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(cmn.Constant.defaultBorderRadius),
+                        ),
+                        borderWidth: cmn.Constant.defaultBorderWidth,
+                        constraints: BoxConstraints(
+                          maxHeight: Constant.dialogRowHeight.h - (cmn.Constant.defaultBorderWidth * 2),
+                          maxWidth: double.infinity,
+                          minHeight: Constant.dialogRowHeight.h - (cmn.Constant.defaultBorderWidth * 2),
+                          minWidth: Constant.dayPeriodWidth.w,
+                        ),
+                        children: DayPeriod.values
+                            .map(
+                              (section) => FittedBox(
+                                alignment: Alignment.center,
+                                child: Text(section.localize.tr),
+                              ),
+                            )
+                            .toList(),
+                        onPressed: (index) => onPressDayPeriod == null ? null : onPressDayPeriod!(index),
                       ),
                     ),
-                    _timeField(minuteController, 59, 0, clock.minute, cmn.Message.minuteLong.tr),
+                    Flexible(
+                      flex: 2,
+                      child: inputFieldTime(hourController, 12, 0, clock.hour, cmn.Message.hourLong.tr),
+                    ),
+                    Center(
+                      child: Text(
+                        cmn.Message.comma,
+                        style: TextStyle(
+                          fontSize: Constant.timeFieldFontSize.sp,
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: inputFieldTime(minuteController, 59, 0, clock.minute, cmn.Message.minuteLong.tr),
+                    ),
                   ],
                 ),
               ),
+              // label
+              columnSpacer(),
               SizedBox(
                 width: double.infinity,
                 height: Constant.dialogRowHeight.h,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(
-                      Icons.label_outline_rounded,
-                      size: Constant.dialogLabelFontSize.sp,
-                    ),
-                    Container(
-                      width: Constant.labelFieldWidth.w,
-                      alignment: Alignment.center,
+                    Expanded(
+                      flex: 4,
                       child: TextFormField(
                         controller: labelController.controller,
                         focusNode: labelController.node,
                         decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 10,
+                          isCollapsed: true,
+                          icon: Icon(
+                            Icons.label_outline_rounded,
+                            size: Constant.dialogFontSize.sp,
                           ),
-                          // TODO: add limit to be suffix
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: Constant.labelFieldHzPadding,
+                            vertical: Constant.labelFieldVtPadding,
+                          ),
                           hintText: cmn.Message.labelHint.tr,
                         ),
                         inputFormatters: [
@@ -318,81 +333,79 @@ class ClockFormWidget extends StatelessWidget {
                         textAlignVertical: TextAlignVertical.center,
                         onFieldSubmitted: (_) => labelController.node?.unfocus(),
                         style: TextStyle(
-                          fontSize: Constant.dialogLabelFontSize.sp,
+                          fontSize: Constant.dialogFontSize.sp,
                           height: 1, // 1 make text align vertical center
                         ),
                       ),
                     ),
-                    Switch(
-                      value: clock.status == cmn.Status.enabled ? true : false,
-                      onChanged: (value) => toggleEnable == null ? null : toggleEnable!(value),
+                    Flexible(
+                      flex: 1,
+                      child: Switch(
+                        value: clock.status == cmn.Status.enabled ? true : false,
+                        onChanged: (value) => toggleEnable == null ? null : toggleEnable!(value),
+                      ),
                     ),
                   ],
                 ),
               ),
-              Container(
-                width: double.infinity,
-                height: Constant.dialogRowHeight.h,
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: EdgeInsets.only(top: Constant.weekdayPaddingTop.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: cmn.Weekday.values
-                        .map(
-                          (weekday) => Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: Constant.weekdayBorderWidth,
-                                ),
-                                color: clock.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
-                                shape: BoxShape.circle,
-                              ),
-                              height: Constant.weekdaySize.h,
-                              width: Constant.weekdaySize.w,
-                              child: InkWell(
-                                borderRadius: const BorderRadius.all(Radius.circular(Constant.weekdayCircularRadius)),
-                                child: Center(
-                                  child: Text(weekday.string),
-                                ),
-                                onTap: () {
-                                  if (clock.isWeekdaysEmpty(weekday)) {
-                                    cmn.Snackbar.getSnackbar(
-                                      height: Constant.notificationHeight.h,
-                                      iconSize: Constant.notificationIconSize.sp,
-                                      message: cmn.Message.infoMsgWeekdayIsEmpty.tr,
-                                    );
-                                  }
-                                  toggleWeekday == null ? null : toggleWeekday!(weekday);
-                                },
-                              ),
+              // weekdays
+              columnSpacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: cmn.Weekday.values
+                    .map(
+                      (weekday) => Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.black,
+                              width: Constant.weekdayBorderWidth,
                             ),
+                            color: clock.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
+                            shape: BoxShape.circle,
                           ),
-                        )
-                        .toList(),
-                  ),
-                ),
+                          height: Constant.weekdaySize.h,
+                          width: Constant.weekdaySize.w,
+                          child: InkWell(
+                            borderRadius: const BorderRadius.all(Radius.circular(Constant.weekdayCircularRadius)),
+                            child: Center(
+                              child: Text(weekday.string),
+                            ),
+                            onTap: () {
+                              if (clock.isWeekdaysEmpty(weekday)) {
+                                cmn.Snackbar.getSnackbar(
+                                  height: Constant.notificationHeight.h,
+                                  iconSize: Constant.notificationIconSize.sp,
+                                  message: cmn.Message.infoMsgWeekdayIsEmpty.tr,
+                                );
+                              }
+                              toggleWeekday == null ? null : toggleWeekday!(weekday);
+                            },
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
+              // ringtone
+              columnSpacer(),
               InkWell(
                 borderRadius: BorderRadius.circular(cmn.Constant.defaultBorderRadius),
                 child: SizedBox(
                   width: double.infinity,
                   height: Constant.dialogRowHeight.h,
                   child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    // crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Icon(
                         Icons.notifications_active_outlined,
-                        size: Constant.labelFontSize.sp * Constant.labelFontRatio,
+                        size: Constant.dialogFontSize.sp,
                       ),
-                      const Spacer(),
                       Text(
-                        'ringtone',
+                        // TODO: change ringtone name
+                        cmn.Message.ringtone.tr,
                         style: TextStyle(
-                          fontSize: Constant.labelFontSize.sp,
+                          fontSize: Constant.dialogFontSize.sp,
                         ),
                       ),
                     ],
@@ -400,33 +413,32 @@ class ClockFormWidget extends StatelessWidget {
                 ),
                 onTap: () => print('${Get.mediaQuery.viewInsets.bottom}'),
               ),
-              Container(
-                width: double.infinity,
-                height: Constant.dialogRowHeight.h,
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.vibration_outlined,
-                      size: Constant.labelFontSize.sp * Constant.labelFontRatio,
-                    ),
-                    const Spacer(),
-                    Switch(
-                      value: clock.vibration,
-                      onChanged: (value) => toggleVibration == null ? null : toggleVibration!(value),
-                    ),
-                  ],
-                ),
+              columnSpacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(
+                    Icons.vibration_outlined,
+                    size: Constant.dialogFontSize.sp,
+                  ),
+                  Switch(
+                    value: clock.vibration,
+                    onChanged: (value) => toggleVibration == null ? null : toggleVibration!(value),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       );
 
-  Widget _timeField(cmn.TextEditComponent controller, int max, int min, int value, String labelText) => Container(
+  /// inputFieldTime
+  Widget inputFieldTime(cmn.TextEditComponent controller, int max, int min, int value, String labelText) => Container(
         width: Constant.timeFieldWidth.w,
+        constraints: BoxConstraints(
+          maxWidth: double.infinity,
+          minWidth: Constant.timeFieldWidth.w,
+        ),
         alignment: Alignment.center,
         child: TextFormField(
           controller: controller.controller,
@@ -439,8 +451,8 @@ class ClockFormWidget extends StatelessWidget {
               ),
             ),
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: Constant.timeFieldContentHorizontalPadding,
-              vertical: Constant.timeFieldContentVerticalPadding,
+              horizontal: Constant.timeFieldContentHzPadding,
+              vertical: Constant.timeFieldContentVtPadding,
             ),
             labelText: labelText,
             floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -460,5 +472,10 @@ class ClockFormWidget extends StatelessWidget {
             height: 1, // 1 make text align vertical center
           ),
         ),
+      );
+
+  /// columnSpacer
+  Widget columnSpacer() => Padding(
+        padding: EdgeInsets.only(top: Constant.columnPaddingTop.h),
       );
 }

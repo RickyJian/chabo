@@ -37,28 +37,25 @@ class Constant {
   static const double notificationHeight = 40;
 
   /// dialog
-  static const double dialogVerticalPadding = 0.5;
-  static const double dialogTimeSectionHeight = 5;
-  static const double dialogTimeSectionWidth = 17;
-  static const double dialogTimeSectionFontSize = 10;
-  static const double dialogBorderWidth = 1.5;
-  static const double dialogRowHeight = 7;
-  static const double dialogLabelFontSize = 26;
+  static const double dialogVtPadding = 15;
+  static const double dialogHzPadding = 10;
+  static const double dialogRowHeight = 40;
+  static const double dialogFontSize = 30;
 
   /// day period
-  static const double dayPeriodHeight = 5;
-  static const double dayPeriodWidth = 12;
-  static const double dayPeriodFontSize = 16;
+  static const double dayPeriodWidth = 45;
 
   /// time field
-  static const double timeFieldWidth = 25;
-  static const double timeFieldContentWidth = 25;
+  static const double timeFieldWidth = 80;
   static const double timeFieldFontSize = 50;
-  static const double timeFieldContentHorizontalPadding = 5;
-  static const double timeFieldContentVerticalPadding = 10;
+  static const double timeFieldContentHzPadding = 5;
+  static const double timeFieldContentVtPadding = 10;
   static const double timeFieldFontSizePadding = 50;
-  static const String timeFieldContentLeadingZero = '0';
 
   /// label field
-  static const double labelFieldWidth = 50;
+  static const double labelFieldHzPadding = 5;
+  static const double labelFieldVtPadding = 5;
+
+  /// column spacer
+  static const double columnPaddingTop = dialogVtPadding;
 }
