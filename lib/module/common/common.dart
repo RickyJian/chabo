@@ -2,6 +2,7 @@ export 'enum.dart';
 export 'message.dart';
 export 'widget.dart';
 export 'constant.dart';
+export 'decoration.dart';
 export 'input_formatter.dart';
 export 'util.dart';
 export 'component.dart';
