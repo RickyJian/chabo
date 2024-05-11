@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:chabo/module/common/common.dart' as cmn;
 
-import 'widget/clock.dart';
+import 'widget/component.dart';
 
 class HomeController extends GetxController {
   var clocks = <ClockComponent>[].obs;
@@ -58,7 +62,11 @@ class FormController extends GetxController {
   late final cmn.TextEditComponent hourController;
   late final cmn.TextEditComponent minuteController;
   late final cmn.TextEditComponent labelController;
+
+  static const MethodChannel ringtoneChannel = MethodChannel('chabo/alarm');
+
   var clock = ClockComponent().obs;
+  var alarms = <AlarmComponent>[].obs;
 
   @override
   void onInit() {
@@ -69,6 +77,7 @@ class FormController extends GetxController {
     labelController = cmn.TextEditComponent(controller: TextEditingController(), node: FocusNode());
     hourController.nextNode = minuteController.node;
     minuteController.nextNode = labelController.node;
+    listAlarms();
   }
 
   @override
@@ -113,4 +122,18 @@ class FormController extends GetxController {
   }
 
   save() => _homeController.clocks.add(clock.value);
+
+  listAlarms() => ringtoneChannel
+      .invokeMethod('listSystemAlarms')
+      .then((data) {
+        if (data is! List) {
+          throw Exception('[listAlarms] invalid type when invoke method channel listSystemAlarms');
+        }
+        return data;
+      })
+      .then((array) => alarms.addAll(array.map((alarm) => AlarmComponent.fromJson(jsonDecode(alarm))).toList()))
+      .catchError((error) {
+        // TODO: use log package instead
+        log(error);
+      });
 }
