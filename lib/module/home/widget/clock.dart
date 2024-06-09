@@ -376,8 +376,9 @@ class ClockFormWidget extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        Expanded(
-                          flex: 2,
+                        SizedBox(
+                          height: Constant.ringtoneTitleHeight.h,
+                          width: double.infinity,
                           child: Center(
                             child: Text(
                               cmn.Message.alarmSystem.tr,
@@ -387,12 +388,13 @@ class ClockFormWidget extends StatelessWidget {
                             ),
                           ),
                         ),
+                        const Divider(),
                         Expanded(
-                          flex: 8,
                           child: ListView(
                             children: alarms
                                 .map(
                                   (alarm) => RadioListTile(
+                                    dense: true,
                                     value: alarm,
                                     groupValue: this.alarm,
                                     title: GestureDetector(

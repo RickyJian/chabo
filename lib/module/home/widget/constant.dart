@@ -58,6 +58,7 @@ class Constant {
 
   /// ringtone
   static const double ringtoneBottomSheetHeight = 350;
+  static const double ringtoneTitleHeight = 45;
   static const double ringtoneFontSize = 25;
 
   /// column spacer
