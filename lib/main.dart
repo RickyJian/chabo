@@ -105,6 +105,8 @@ class AppPage extends StatelessWidget {
                         init: _formController,
                         builder: (form) => ClockFormWidget(
                           clock: form.clock.value,
+                          alarm: form.selected.value,
+                          alarms: form.alarms,
                           hourController: form.hourController,
                           minuteController: form.minuteController,
                           onPressDayPeriod: form.onPressDayPeriod,
@@ -112,6 +114,7 @@ class AppPage extends StatelessWidget {
                           toggleEnable: form.toggleEnable,
                           toggleWeekday: form.toggleWeekday,
                           toggleVibration: form.toggleVibration,
+                          onChangeAlarm: form.onChangeAlarm,
                         ),
                       ),
                       footer: Row(

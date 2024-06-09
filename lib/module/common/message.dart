@@ -38,7 +38,8 @@ class Message extends Translations {
   static const String weekdaySAT = 'WEEKDAY_SAT';
 
   /// ringtone
-  static const String ringtone = 'RINGTONE';
+  static const String alarm = 'RINGTONE';
+  static const String alarmSystem = 'RINGTONE_SYSTEM';
 
   /// common
   static const String dayShort = 'DAY';
@@ -67,7 +68,8 @@ class Message extends Translations {
           weekdayTHU: 'THU',
           weekdayFRI: 'FRI',
           weekdaySAT: 'SAT',
-          ringtone: 'ringtone',
+          alarm: 'Alarm',
+          alarmSystem: 'System Alarms',
           dayShort: 'D',
           hourShort: 'H',
           minuteShort: 'M',
@@ -92,7 +94,8 @@ class Message extends Translations {
           weekdayTHU: '四',
           weekdayFRI: '五',
           weekdaySAT: '六',
-          ringtone: '鈴聲',
+          alarm: '鬧鈴',
+          alarmSystem: '系統鬧鈴',
           dayShort: '天',
           hourShort: '時',
           minuteShort: '分',

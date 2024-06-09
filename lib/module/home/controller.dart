@@ -63,10 +63,11 @@ class FormController extends GetxController {
   late final cmn.TextEditComponent minuteController;
   late final cmn.TextEditComponent labelController;
 
-  static const MethodChannel ringtoneChannel = MethodChannel('chabo/alarm');
+  static const MethodChannel alarmChannel = MethodChannel('chabo/alarm');
 
   var clock = ClockComponent().obs;
   var alarms = <AlarmComponent>[].obs;
+  var selected = AlarmComponent().obs;
 
   @override
   void onInit() {
@@ -123,17 +124,21 @@ class FormController extends GetxController {
 
   save() => _homeController.clocks.add(clock.value);
 
-  listAlarms() => ringtoneChannel
-      .invokeMethod('listSystemAlarms')
-      .then((data) {
+  listAlarms() => alarmChannel.invokeMethod('listSystemAlarms').then((data) {
         if (data is! List) {
           throw Exception('[listAlarms] invalid type when invoke method channel listSystemAlarms');
+        } else if (data.isEmpty) {
+          throw Exception('[listAlarms] cannot find system alarms');
         }
         return data;
-      })
-      .then((array) => alarms.addAll(array.map((alarm) => AlarmComponent.fromJson(jsonDecode(alarm))).toList()))
-      .catchError((error) {
+      }).then((array) {
+        alarms.value =
+            List<AlarmComponent>.generate(array.length, (i) => AlarmComponent.fromJson(jsonDecode(array[i])));
+        selected.value = alarms[0];
+      }).catchError((error) {
         // TODO: use log package instead
         log(error);
       });
+
+  onChangeAlarm(AlarmComponent alarm) => selected.value = alarm;
 }

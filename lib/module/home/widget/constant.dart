@@ -56,6 +56,10 @@ class Constant {
   static const double labelFieldHzPadding = 5;
   static const double labelFieldVtPadding = 5;
 
+  /// ringtone
+  static const double ringtoneBottomSheetHeight = 350;
+  static const double ringtoneFontSize = 25;
+
   /// column spacer
   static const double columnPaddingTop = dialogVtPadding;
 }

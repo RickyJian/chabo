@@ -157,6 +157,7 @@ class ClockWidget extends StatelessWidget {
 
 class ClockFormWidget extends StatelessWidget {
   final ClockComponent clock;
+  final AlarmComponent alarm;
   final cmn.TextEditComponent hourController;
   final cmn.TextEditComponent minuteController;
   final Function(int index)? onPressDayPeriod;
@@ -165,15 +166,21 @@ class ClockFormWidget extends StatelessWidget {
   final Function(cmn.Weekday weekday)? toggleWeekday;
   final Function(bool value)? toggleVibration;
 
+  final List<AlarmComponent> alarms;
+  final Function(AlarmComponent alarm)? onChangeAlarm;
+
   const ClockFormWidget(
       {required this.clock,
+      required this.alarm,
       required this.hourController,
       required this.minuteController,
       required this.labelController,
+      required this.alarms,
       this.onPressDayPeriod,
       this.toggleEnable,
       this.toggleWeekday,
-      this.toggleVibration});
+      this.toggleVibration,
+      this.onChangeAlarm});
 
   @override
   Widget build(context) => Padding(
@@ -343,7 +350,8 @@ class ClockFormWidget extends StatelessWidget {
                       ),
                       Text(
                         // TODO: change ringtone name
-                        cmn.Message.ringtone.tr,
+                        // cmn.Message.alarm.tr,
+                        alarm.name,
                         style: TextStyle(
                           fontSize: Constant.dialogFontSize.sp,
                         ),
@@ -351,7 +359,71 @@ class ClockFormWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                onTap: () => print('${Get.mediaQuery.viewInsets.bottom}'),
+                onLongPress: () => print('play ringtone'),
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  enableDrag: false,
+                  builder: (context) => Container(
+                    height: Constant.ringtoneBottomSheetHeight.h,
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(cmn.Constant.defaultBorderRadius),
+                        topRight: Radius.circular(cmn.Constant.defaultBorderRadius),
+                      ),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Center(
+                            child: Text(
+                              cmn.Message.alarmSystem.tr,
+                              style: TextStyle(
+                                fontSize: Constant.ringtoneFontSize.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 8,
+                          child: ListView(
+                            children: alarms
+                                .map(
+                                  (alarm) => RadioListTile(
+                                    value: alarm,
+                                    groupValue: this.alarm,
+                                    title: GestureDetector(
+                                      child: Row(
+                                        children: [
+                                          const Expanded(
+                                            flex: 2,
+                                            child: Icon(Icons.alarm_outlined),
+                                          ),
+                                          Expanded(
+                                            flex: 8,
+                                            child: Text(alarm.name),
+                                          ),
+                                        ],
+                                      ),
+                                      onLongPress: () => print('play ringtone'),
+                                    ),
+                                    controlAffinity: ListTileControlAffinity.trailing,
+                                    onChanged: (alarm) {
+                                      onChangeAlarm?.call(alarm!);
+                                      Get.back();
+                                    },
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               columnSpacer(),
               Row(

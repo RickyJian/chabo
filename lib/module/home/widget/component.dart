@@ -64,7 +64,7 @@ class AlarmComponent {
   String name;
   String uri;
 
-  AlarmComponent({required this.name, required this.uri});
+  AlarmComponent({this.name = '', this.uri = ''});
 
   factory AlarmComponent.fromJson(Map<String, dynamic> json) {
     return AlarmComponent(
