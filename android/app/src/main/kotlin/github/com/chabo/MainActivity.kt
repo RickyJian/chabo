@@ -3,6 +3,7 @@ package github.com.chabo
 import android.content.Context
 import android.graphics.Rect
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
@@ -94,11 +95,15 @@ class MainActivity : FlutterActivity() {
     private lateinit var player: MediaPlayer
 
     private fun playSystemAlarm(context: Context, uri: Uri) {
-        player = MediaPlayer.create(context, uri)
+        player = MediaPlayer()
         player.setAudioAttributes(
-            AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()
+            AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
         )
+        player.setDataSource(context, uri)
+        player.prepare()
         player.start()
     }
 
