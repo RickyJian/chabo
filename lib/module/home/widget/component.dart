@@ -60,14 +60,14 @@ class ClockComponent {
   onPressDayPeriod(int index) => index == 0 ? period = DayPeriod.am : period = DayPeriod.pm;
 }
 
-class AlarmComponent {
+class SystemAlarmComponent {
   String name;
   String uri;
 
-  AlarmComponent({this.name = '', this.uri = ''});
+  SystemAlarmComponent({this.name = '', this.uri = ''});
 
-  factory AlarmComponent.fromJson(Map<String, dynamic> json) {
-    return AlarmComponent(
+  factory SystemAlarmComponent.fromJson(Map<String, dynamic> json) {
+    return SystemAlarmComponent(
       name: json['name'] as String,
       uri: json['uri'] as String,
     );

@@ -59,26 +59,33 @@ class HomeController extends GetxController {
 
 class FormController extends GetxController {
   final HomeController _homeController = Get.find();
+  final AlarmController alarmController;
+  late final List<SystemAlarmComponent> alarms;
+
   late final cmn.TextEditComponent hourController;
   late final cmn.TextEditComponent minuteController;
   late final cmn.TextEditComponent labelController;
 
-  static const MethodChannel alarmChannel = MethodChannel('chabo/alarm');
-
   var clock = ClockComponent().obs;
-  var alarms = <AlarmComponent>[].obs;
-  var selected = AlarmComponent().obs;
+  var alarmSelected = SystemAlarmComponent().obs;
+
+  FormController({required alarmTag}) : alarmController = Get.put(tag: alarmTag, AlarmController());
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
+
+    // init clock
     hourController =
         cmn.TextEditComponent(controller: TextEditingController(text: '01'), autoFocus: true, node: FocusNode());
     minuteController = cmn.TextEditComponent(controller: TextEditingController(text: '00'), node: FocusNode());
     labelController = cmn.TextEditComponent(controller: TextEditingController(), node: FocusNode());
     hourController.nextNode = minuteController.node;
     minuteController.nextNode = labelController.node;
-    listAlarms();
+
+    // init alarms
+    alarms = await alarmController.fetchAlarms();
+    alarmSelected.value = alarms[0];
   }
 
   @override
@@ -124,21 +131,30 @@ class FormController extends GetxController {
 
   save() => _homeController.clocks.add(clock.value);
 
-  listAlarms() => alarmChannel.invokeMethod('listSystemAlarms').then((data) {
+  onChangeAlarm(SystemAlarmComponent alarm) => alarmSelected.value = alarm;
+}
+
+class AlarmController {
+  static const MethodChannel alarmChannel = MethodChannel('chabo/alarm');
+
+  Future<List<SystemAlarmComponent>> fetchAlarms() async => alarmChannel.invokeMethod('listSystemAlarms').then((data) {
         if (data is! List) {
-          throw Exception('[listAlarms] invalid type when invoke method channel listSystemAlarms');
+          throw Exception('[fetchAlarms] invalid type when invoke method channel listSystemAlarms');
         } else if (data.isEmpty) {
-          throw Exception('[listAlarms] cannot find system alarms');
+          throw Exception('[fetchAlarms] cannot find system alarms');
         }
         return data;
       }).then((array) {
-        alarms.value =
-            List<AlarmComponent>.generate(array.length, (i) => AlarmComponent.fromJson(jsonDecode(array[i])));
-        selected.value = alarms[0];
+        return List<SystemAlarmComponent>.generate(
+            array.length, (i) => SystemAlarmComponent.fromJson(jsonDecode(array[i])));
       }).catchError((error) {
         // TODO: use log package instead
         log(error);
       });
 
-  onChangeAlarm(AlarmComponent alarm) => selected.value = alarm;
+  Future<void> playAlarm(String uri) async =>
+      await alarmChannel.invokeMethod('playSystemAlarm', uri).catchError((error) => log(error));
+
+  Future<void> stopAlarm() async =>
+      await alarmChannel.invokeMethod('stopSystemAlarm').catchError((error) => log(error));
 }

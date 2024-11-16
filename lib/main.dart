@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
 
 class AppPage extends StatelessWidget {
   final HomeController _homeController = Get.put(HomeController());
-  final FormController _formController = Get.put(FormController());
+  final FormController _formController = Get.put(FormController(alarmTag: 'new'));
 
   @override
   Widget build(context) => Scaffold(
@@ -105,8 +105,8 @@ class AppPage extends StatelessWidget {
                         init: _formController,
                         builder: (form) => ClockFormWidget(
                           clock: form.clock.value,
-                          alarm: form.selected.value,
                           alarms: form.alarms,
+                          selectedAlarm: form.alarmSelected.value,
                           hourController: form.hourController,
                           minuteController: form.minuteController,
                           onPressDayPeriod: form.onPressDayPeriod,
@@ -115,6 +115,8 @@ class AppPage extends StatelessWidget {
                           toggleWeekday: form.toggleWeekday,
                           toggleVibration: form.toggleVibration,
                           onChangeAlarm: form.onChangeAlarm,
+                          playAlarm: form.alarmController.playAlarm,
+                          stopAlarm: form.alarmController.stopAlarm,
                         ),
                       ),
                       footer: Row(

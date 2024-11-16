@@ -157,7 +157,9 @@ class ClockWidget extends StatelessWidget {
 
 class ClockFormWidget extends StatelessWidget {
   final ClockComponent clock;
-  final AlarmComponent alarm;
+  final List<SystemAlarmComponent> alarms;
+  final SystemAlarmComponent? selectedAlarm;
+
   final cmn.TextEditComponent hourController;
   final cmn.TextEditComponent minuteController;
   final Function(int index)? onPressDayPeriod;
@@ -166,21 +168,24 @@ class ClockFormWidget extends StatelessWidget {
   final Function(cmn.Weekday weekday)? toggleWeekday;
   final Function(bool value)? toggleVibration;
 
-  final List<AlarmComponent> alarms;
-  final Function(AlarmComponent alarm)? onChangeAlarm;
+  final Function(SystemAlarmComponent alarm)? onChangeAlarm;
+  final Function(String uri)? playAlarm;
+  final Function()? stopAlarm;
 
   const ClockFormWidget(
       {required this.clock,
-      required this.alarm,
+      required this.alarms,
       required this.hourController,
       required this.minuteController,
       required this.labelController,
-      required this.alarms,
+      this.selectedAlarm,
       this.onPressDayPeriod,
       this.toggleEnable,
       this.toggleWeekday,
       this.toggleVibration,
-      this.onChangeAlarm});
+      this.onChangeAlarm,
+      this.playAlarm,
+      this.stopAlarm});
 
   @override
   Widget build(context) => Padding(
@@ -350,8 +355,7 @@ class ClockFormWidget extends StatelessWidget {
                       ),
                       Text(
                         // TODO: change ringtone name
-                        // cmn.Message.alarm.tr,
-                        alarm.name,
+                        selectedAlarm?.name ?? '',
                         style: TextStyle(
                           fontSize: Constant.dialogFontSize.sp,
                         ),
@@ -396,7 +400,7 @@ class ClockFormWidget extends StatelessWidget {
                                   (alarm) => RadioListTile(
                                     dense: true,
                                     value: alarm,
-                                    groupValue: this.alarm,
+                                    groupValue: selectedAlarm,
                                     title: GestureDetector(
                                       child: Row(
                                         children: [
@@ -406,16 +410,24 @@ class ClockFormWidget extends StatelessWidget {
                                           ),
                                           Expanded(
                                             flex: 8,
-                                            child: Text(alarm.name),
+                                            child: Text(
+                                              alarm.name,
+                                              style: TextStyle(
+                                                fontSize: 20.sp,
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),
-                                      onLongPress: () => print('play ringtone'),
+                                      onLongPressStart: (_) => playAlarm?.call(alarm.uri),
+                                      onLongPressEnd: (_) => stopAlarm?.call(),
                                     ),
                                     controlAffinity: ListTileControlAffinity.trailing,
                                     onChanged: (alarm) {
-                                      onChangeAlarm?.call(alarm!);
-                                      Get.back();
+                                      if (alarm != null) {
+                                        onChangeAlarm?.call(alarm);
+                                        Get.back();
+                                      }
                                     },
                                   ),
                                 )
