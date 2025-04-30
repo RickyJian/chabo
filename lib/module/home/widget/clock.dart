@@ -101,7 +101,7 @@ class ClockWidget extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Switch(
                         value: component.status == cmn.Status.enabled ? true : false,
-                        onChanged: (value) => toggleEnable == null ? null : toggleEnable!(value),
+                        onChanged: toggleEnable,
                       ),
                     ),
                   ),
@@ -341,103 +341,110 @@ class ClockFormWidget extends StatelessWidget {
               ),
               // ringtone
               columnSpacer(),
-              InkWell(
-                borderRadius: BorderRadius.circular(cmn.Constant.defaultBorderRadius),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: Constant.dialogRowHeight.h,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        Icons.notifications_active_outlined,
-                        size: Constant.dialogFontSize.sp,
-                      ),
-                      Text(
-                        // TODO: change ringtone name
-                        selectedAlarm?.name ?? '',
-                        style: TextStyle(
-                          fontSize: Constant.dialogFontSize.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                onLongPress: () => print('play ringtone'),
-                onTap: () => showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  enableDrag: false,
-                  builder: (context) => Container(
-                    height: Constant.ringtoneBottomSheetHeight.h,
+              GestureDetector(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(cmn.Constant.defaultBorderRadius),
+                  child: SizedBox(
                     width: double.infinity,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(cmn.Constant.defaultBorderRadius),
-                        topRight: Radius.circular(cmn.Constant.defaultBorderRadius),
-                      ),
-                      color: Colors.white,
-                    ),
-                    child: Column(
+                    height: Constant.dialogRowHeight.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          height: Constant.ringtoneTitleHeight.h,
-                          width: double.infinity,
-                          child: Center(
-                            child: Text(
-                              cmn.Message.alarmSystem.tr,
-                              style: TextStyle(
-                                fontSize: Constant.ringtoneFontSize.sp,
-                              ),
-                            ),
-                          ),
+                        Icon(
+                          Icons.notifications_active_outlined,
+                          size: Constant.dialogFontSize.sp,
                         ),
-                        const Divider(),
-                        Expanded(
-                          child: ListView(
-                            children: alarms
-                                .map(
-                                  (alarm) => RadioListTile(
-                                    dense: true,
-                                    value: alarm,
-                                    groupValue: selectedAlarm,
-                                    title: GestureDetector(
-                                      child: Row(
-                                        children: [
-                                          const Expanded(
-                                            flex: 2,
-                                            child: Icon(Icons.alarm_outlined),
-                                          ),
-                                          Expanded(
-                                            flex: 8,
-                                            child: Text(
-                                              alarm.name,
-                                              style: TextStyle(
-                                                fontSize: 20.sp,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      onLongPressStart: (_) => playAlarm?.call(alarm.uri),
-                                      onLongPressEnd: (_) => stopAlarm?.call(),
-                                    ),
-                                    controlAffinity: ListTileControlAffinity.trailing,
-                                    onChanged: (alarm) {
-                                      if (alarm != null) {
-                                        onChangeAlarm?.call(alarm);
-                                        Get.back();
-                                      }
-                                    },
-                                  ),
-                                )
-                                .toList(),
+                        Text(
+                          // TODO: change ringtone name
+                          selectedAlarm?.name ?? '',
+                          style: TextStyle(
+                            fontSize: Constant.dialogFontSize.sp,
                           ),
                         ),
                       ],
                     ),
                   ),
+                  onTap: () => showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    enableDrag: false,
+                    builder: (context) => Container(
+                      height: Constant.ringtoneBottomSheetHeight.h,
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(cmn.Constant.defaultBorderRadius),
+                          topRight: Radius.circular(cmn.Constant.defaultBorderRadius),
+                        ),
+                        color: Colors.white,
+                      ),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: Constant.ringtoneTitleHeight.h,
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                cmn.Message.alarmSystem.tr,
+                                style: TextStyle(
+                                  fontSize: Constant.ringtoneFontSize.sp,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const Divider(),
+                          Expanded(
+                            child: ListView(
+                              children: alarms
+                                  .map(
+                                    (alarm) => RadioListTile(
+                                      dense: true,
+                                      value: alarm,
+                                      groupValue: selectedAlarm,
+                                      title: GestureDetector(
+                                        child: Row(
+                                          children: [
+                                            const Expanded(
+                                              flex: 2,
+                                              child: Icon(Icons.alarm_outlined),
+                                            ),
+                                            Expanded(
+                                              flex: 8,
+                                              child: Text(
+                                                alarm.name,
+                                                style: TextStyle(
+                                                  fontSize: 20.sp,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        onLongPressStart: (_) => playAlarm?.call(alarm.uri),
+                                        onLongPressEnd: (_) => stopAlarm?.call(),
+                                      ),
+                                      controlAffinity: ListTileControlAffinity.trailing,
+                                      onChanged: (alarm) {
+                                        if (alarm != null) {
+                                          onChangeAlarm?.call(alarm);
+                                          Get.back();
+                                        }
+                                      },
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
+                onLongPressStart: (_) {
+                  if (selectedAlarm case final alarm? when alarm.uri != "") {
+                    playAlarm?.call(alarm.uri);
+                  }
+                },
+                onLongPressEnd: (_) => stopAlarm?.call(),
               ),
               columnSpacer(),
               Row(
