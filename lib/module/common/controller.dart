@@ -1,6 +1,5 @@
 import 'package:chabo/module/common/common.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class DialogController extends GetxController {
