@@ -17,3 +17,12 @@ class AlarmLoaded extends AlarmState {
   @override
   List<Object?> get props => [alarms];
 }
+
+class AlarmSnackbarLoaded extends AlarmState {
+  final String message;
+
+  const AlarmSnackbarLoaded({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}

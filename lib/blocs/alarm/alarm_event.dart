@@ -27,10 +27,11 @@ final class AlarmEnableToggled extends AlarmEvent {
 final class AlarmWeekdayToggled extends AlarmEvent {
   final Alarm alarm;
   final Weekday weekday;
-  const AlarmWeekdayToggled({required this.alarm, required this.weekday});
+  final String? message;
+  const AlarmWeekdayToggled({required this.alarm, required this.weekday, this.message});
 
   @override
-  List<Object?> get props => [alarm, weekday];
+  List<Object?> get props => [alarm, weekday, message];
 }
 
 class AlarmAdded extends AlarmEvent {
@@ -46,7 +47,7 @@ class AlarmUpdated extends AlarmEvent {
   const AlarmUpdated({required this.alarm});
 
   @override
-    List<Object?> get props => [alarm];
+  List<Object?> get props => [alarm];
 }
 
 class AlarmDeleted extends AlarmEvent {
