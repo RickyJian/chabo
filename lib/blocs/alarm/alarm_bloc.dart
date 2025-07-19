@@ -27,30 +27,33 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
         weekdays: Weekday.values.toList(),
       ),
     );
+
     emit(AlarmLoaded(alarms: alarms));
   }
 
-  void _onAlarmEnableToggled(
-      AlarmEnableToggled event, Emitter<AlarmState> emit) {
+  void _onAlarmEnableToggled(AlarmEnableToggled event, Emitter<AlarmState> emit) {
     if (state case AlarmLoaded(alarms: final alarms)) {
       final updatedAlarms = alarms
-          .map((alarm) => alarm.id == event.alarm.id
-              ? alarm.copyWith(
-                  status: event.enabled ? Status.enabled : Status.disabled)
-              : alarm)
+          .map(
+            (alarm) => alarm.id == event.alarm.id
+                ? alarm.toggleEnable(event.enabled ? Status.enabled : Status.disabled)
+                : alarm,
+          )
           .toList();
 
       emit(AlarmLoaded(alarms: updatedAlarms));
     }
   }
 
-  void _onAlarmWeekdayToggled(
-      AlarmWeekdayToggled event, Emitter<AlarmState> emit) {
+  void _onAlarmWeekdayToggled(AlarmWeekdayToggled event, Emitter<AlarmState> emit) {
     if (state case AlarmLoaded(alarms: final alarms)) {
+      final alarm = alarms.firstWhere((alarm) => alarm.id == event.alarm.id);
+      if (event.message?.isNotEmpty == true && (alarm.weekdays.length <= 1 && alarm.weekdays.contains(event.weekday))) {
+        emit(AlarmSnackbarLoaded(message: event.message!));
+      }
+
       final updatedAlarms = alarms
-          .map((alarm) => alarm.id == event.alarm.id
-              ? alarm.toggleWeekdays(event.weekday)
-              : alarm)
+          .map((alarm) => alarm.id == event.alarm.id ? alarm.toggleWeekdays(event.weekday) : alarm)
           .toList();
 
       emit(AlarmLoaded(alarms: updatedAlarms));
