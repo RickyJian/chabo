@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:chabo/blocs/blocs.dart';
 import 'package:chabo/screens/home/widgets/widgets.dart';
 import 'package:chabo/l10n/app_localizations.dart';
+import 'package:chabo/core/widgets/widgets.dart';
+import 'constant.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -29,12 +32,7 @@ class HomeScreen extends StatelessWidget {
       listenWhen: (previous, current) => current is AlarmSnackbarLoaded,
       listener: (context, state) {
         if (state case AlarmSnackbarLoaded(message: final message)) {
-          // todo: add snackbar
-          // Snackbar.getSnackbar(
-          //   height: Constant.notificationHeight.h,
-          //   iconSize: Constant.notificationIconSize.sp,
-          //   message: message,
-          // );
+          Snackbar.showSnackbar(context: context, height: Constant.notificationHeight, message: message);
         }
       },
       child: BlocBuilder<AlarmBloc, AlarmState>(
