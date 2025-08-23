@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:chabo/l10n/app_localizations.dart';
+import 'package:chabo/models/models.dart';
 import 'blocs/blocs.dart';
 import 'module/common/common.dart' as cmn;
 import 'screens/screens.dart';
@@ -12,12 +13,15 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(context) {
-    final mediaQuery = MediaQuery.of(context);
     return ScreenUtilInit(
-      designSize: Size(mediaQuery.size.width, mediaQuery.size.height),
+      designSize: Size(390, 844),
       builder: (context, child) {
+        DeviceModel.init(context: context);
         return MultiBlocProvider(
-          providers: [BlocProvider<AlarmBloc>(create: (context) => AlarmBloc()..add(const AlarmListed()))],
+          providers: [
+            BlocProvider<AlarmBloc>(create: (context) => AlarmBloc()..add(const AlarmListed())),
+            BlocProvider<DialogBloc>(create: (context) => DialogBloc()),
+          ],
           child: MaterialApp(
             onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
             localizationsDelegates: const [
