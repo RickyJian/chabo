@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         DeviceModel.init(context: context);
         return MultiBlocProvider(
           providers: [
-            BlocProvider<AlarmBloc>(create: (context) => AlarmBloc()..add(const AlarmListed())),
+            BlocProvider<AlarmClockBloc>(create: (context) => AlarmClockBloc()..add(const AlarmClockListed())),
             BlocProvider<DialogBloc>(create: (context) => DialogBloc()),
           ],
           child: MaterialApp(
@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
 //       builder: (context, state) {
 //         return switch (state) {
 //           AlarmInitial() => const Center(child: CircularProgressIndicator()),
-//           AlarmLoaded(alarms: final alarms) => ListView.builder(
+//           AlarmListLoaded(alarms: final alarms) => ListView.builder(
 //             itemCount: alarms.length,
 //             itemBuilder: (context, index) {
 //               final alarm = alarms[index];

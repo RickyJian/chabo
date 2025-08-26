@@ -1,1 +1,1 @@
-export 'alarm_widget.dart';
+export 'alarm_list_widget.dart';

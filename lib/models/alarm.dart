@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:chabo/core/enums/weekday.dart';
 import 'package:chabo/core/enums/status.dart';
 
-class Alarm {
+class AlarmClock {
   final int id;
   final int hour;
   final int minute;
@@ -14,7 +14,7 @@ class Alarm {
 
   // TODO: add diff time, ringtone
 
-  Alarm({
+  AlarmClock({
     this.id = -1,
     this.hour = 1,
     this.minute = 0,
@@ -25,7 +25,7 @@ class Alarm {
     this.vibration = true,
   });
 
-  Alarm.init(TimeOfDay t)
+  AlarmClock.init(TimeOfDay t)
     : id = DateTime.now().microsecondsSinceEpoch,
       hour = t.hourOfPeriod,
       minute = t.minute,
@@ -35,7 +35,7 @@ class Alarm {
       status = Status.enabled,
       vibration = true;
 
-  Alarm copyWith({
+  AlarmClock copyWith({
     int? id,
     int? hour,
     int? minute,
@@ -45,7 +45,7 @@ class Alarm {
     Status? status,
     bool? vibration,
   }) {
-    return Alarm(
+    return AlarmClock(
       id: id ?? this.id,
       hour: hour ?? this.hour,
       minute: minute ?? this.minute,
@@ -57,12 +57,23 @@ class Alarm {
     );
   }
 
-  Alarm toggleEnable(Status status) => copyWith(status: status);
+  AlarmClock toggleEnable(Status status) => copyWith(status: status);
 
-  Alarm toggleWeekdays(Weekday weekday) {
+  AlarmClock toggleWeekdays(Weekday weekday) {
     final newWeekdays =
         weekdays.contains(weekday) ? weekdays.where((day) => day != weekday).toList() : [...weekdays, weekday]
           ..sort((a, b) => a.index.compareTo(b.index));
     return copyWith(weekdays: newWeekdays.isEmpty ? Weekday.values.toList() : newWeekdays);
   }
 }
+
+// class SystemAlarmComponent {
+//   String name;
+//   String uri;
+
+//   SystemAlarmComponent({this.name = '', this.uri = ''});
+
+//   factory SystemAlarmComponent.fromJson(Map<String, dynamic> json) {
+//     return SystemAlarmComponent(name: json['name'] as String, uri: json['uri'] as String);
+//   }
+// }

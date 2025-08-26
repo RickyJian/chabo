@@ -6,13 +6,13 @@ import 'package:chabo/core/enums/enums.dart';
 import 'package:chabo/core/extensions/extensions.dart';
 import 'constant.dart';
 
-class AlarmWidget extends StatelessWidget {
-  final Alarm alarm;
+class AlarmListWidget extends StatelessWidget {
+  final AlarmClock alarm;
   final bool isLast;
   final Function(bool value) toggleEnable;
   final Function(Weekday weekday) toggleWeekday;
 
-  const AlarmWidget({
+  const AlarmListWidget({
     required this.alarm,
     this.isLast = false,
     required this.toggleEnable,
