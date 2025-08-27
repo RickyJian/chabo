@@ -82,4 +82,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get setting => '設定';
+
+  @override
+  String get comma => '：';
 }

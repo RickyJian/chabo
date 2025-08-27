@@ -83,4 +83,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setting => 'Setting';
+
+  @override
+  String get comma => ':';
 }

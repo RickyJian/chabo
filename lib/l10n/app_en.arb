@@ -23,5 +23,6 @@
   "cancel": "cancel",
   "save": "save",
   "clockCreateTitle": "New Alarm Clock",
-  "setting": "Setting"
+  "setting": "Setting",
+  "comma": ":"
 }

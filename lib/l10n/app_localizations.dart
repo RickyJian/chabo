@@ -247,6 +247,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Setting'**
   String get setting;
+
+  /// No description provided for @comma.
+  ///
+  /// In en, this message translates to:
+  /// **':'**
+  String get comma;
 }
 
 class _AppLocalizationsDelegate
