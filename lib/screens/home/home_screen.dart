@@ -16,17 +16,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(context) => Scaffold(
     appBar: AppBar(
-      // leading: IconButton(
-      //   icon: const FaIcon(FontAwesomeIcons.bars),
-      //   alignment: Alignment.center,
-      //   onPressed: () => getx.Get.to(
-      //     SettingPage(),
-      //     duration: const Duration(
-      //       milliseconds: cmn.Constant.navigationDuration,
-      //     ),
-      //     transition: getx.Transition.leftToRight,
-      //   ),
-      // ),
       title: Text(AppLocalizations.of(context)!.appTitle),
       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       centerTitle: true,

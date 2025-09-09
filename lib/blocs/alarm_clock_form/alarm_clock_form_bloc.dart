@@ -114,6 +114,7 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
       .catchError((error) {
         // TODO: use log package instead
         log(error);
+        return <SystemAlarmRingtone>[];
       });
 
   Future<void> playAlarm(String uri) async =>
