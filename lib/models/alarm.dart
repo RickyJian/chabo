@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:chabo/core/enums/weekday.dart';
-import 'package:chabo/core/enums/status.dart';
+import 'package:chabo/core/enums/enums.dart';
+import 'package:ulid/ulid.dart';
+import 'ringtone.dart';
 
 class AlarmClock {
-  final int id;
+  final String id;
   final int hour;
   final int minute;
   final DayPeriod period;
@@ -11,32 +12,10 @@ class AlarmClock {
   final List<Weekday> weekdays;
   final Status status;
   final bool vibration;
-
-  // TODO: add diff time, ringtone
+  final AlarmRingtone? ringtone;
 
   AlarmClock({
-    this.id = -1,
-    this.hour = 1,
-    this.minute = 0,
-    this.period = DayPeriod.am,
-    this.name = '',
-    this.weekdays = Weekday.values,
-    this.status = Status.enabled,
-    this.vibration = true,
-  });
-
-  AlarmClock.init(TimeOfDay t)
-    : id = DateTime.now().microsecondsSinceEpoch,
-      hour = t.hourOfPeriod,
-      minute = t.minute,
-      period = t.period,
-      name = '',
-      weekdays = Weekday.values,
-      status = Status.enabled,
-      vibration = true;
-
-  AlarmClock copyWith({
-    int? id,
+    String? id,
     int? hour,
     int? minute,
     DayPeriod? period,
@@ -44,6 +23,38 @@ class AlarmClock {
     List<Weekday>? weekdays,
     Status? status,
     bool? vibration,
+    AlarmRingtone? ringtone,
+  }) : id = id ?? Ulid().toString(),
+       hour = hour ?? 1,
+       minute = minute ?? 0,
+       period = period ?? DayPeriod.am,
+       name = name ?? '',
+       weekdays = weekdays ?? Weekday.values,
+       status = status ?? Status.enabled,
+       vibration = vibration ?? true,
+       ringtone = ringtone ?? null;
+
+  AlarmClock.init(TimeOfDay t)
+    : id = Ulid().toString(),
+      hour = t.hourOfPeriod,
+      minute = t.minute,
+      period = t.period,
+      name = '',
+      weekdays = Weekday.values,
+      status = Status.enabled,
+      vibration = true,
+      ringtone = null;
+
+  AlarmClock copyWith({
+    String? id,
+    int? hour,
+    int? minute,
+    DayPeriod? period,
+    String? name,
+    List<Weekday>? weekdays,
+    Status? status,
+    bool? vibration,
+    AlarmRingtone? ringtone,
   }) {
     return AlarmClock(
       id: id ?? this.id,
@@ -54,8 +65,13 @@ class AlarmClock {
       weekdays: weekdays ?? this.weekdays,
       status: status ?? this.status,
       vibration: vibration ?? this.vibration,
+      ringtone: ringtone ?? this.ringtone,
     );
   }
+
+  AlarmClock togglePeriod(DayPeriod period) => copyWith(period: period);
+
+  AlarmClock toggleVibration(bool vibration) => copyWith(vibration: vibration);
 
   AlarmClock toggleEnable(Status status) => copyWith(status: status);
 
@@ -66,14 +82,3 @@ class AlarmClock {
     return copyWith(weekdays: newWeekdays.isEmpty ? Weekday.values.toList() : newWeekdays);
   }
 }
-
-// class SystemAlarmComponent {
-//   String name;
-//   String uri;
-
-//   SystemAlarmComponent({this.name = '', this.uri = ''});
-
-//   factory SystemAlarmComponent.fromJson(Map<String, dynamic> json) {
-//     return SystemAlarmComponent(name: json['name'] as String, uri: json['uri'] as String);
-//   }
-// }

@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
           providers: [
             BlocProvider<AlarmClockBloc>(create: (context) => AlarmClockBloc()..add(const AlarmClockListed())),
             BlocProvider<DialogBloc>(create: (context) => DialogBloc()),
+            BlocProvider<AlarmClockFormBloc>(create: (context) => AlarmClockFormBloc()),
           ],
           child: MaterialApp(
             onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,

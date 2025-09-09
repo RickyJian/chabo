@@ -5,8 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:chabo/blocs/blocs.dart';
 import 'package:chabo/screens/home/widgets/widgets.dart';
 import 'package:chabo/l10n/app_localizations.dart';
-import 'package:chabo/core/widgets/widgets.dart' as core;
+import 'package:chabo/core/core.dart' as core;
 import 'package:chabo/models/models.dart';
+
 import 'constant.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -41,18 +42,18 @@ class HomeScreen extends StatelessWidget {
         builder: (context, state) {
           return switch (state) {
             AlarmClockInitial() => const Center(child: CircularProgressIndicator()),
-            AlarmClockListLoaded(alarms: final alarms) => ListView.builder(
-              itemCount: alarms.length,
+            AlarmClockListLoaded(clocks: final clocks) => ListView.builder(
+              itemCount: clocks.length,
               itemBuilder: (context, index) {
-                final alarm = alarms[index];
+                final clock = clocks[index];
                 return AlarmListWidget(
-                  alarm: alarm,
-                  isLast: index == alarms.length - 1,
+                  clock: clock,
+                  isLast: index == clocks.length - 1,
                   toggleEnable: (enable) =>
-                      context.read<AlarmClockBloc>().add(AlarmClockEnableToggled(alarm: alarm, enabled: enable)),
+                      context.read<AlarmClockBloc>().add(AlarmClockEnableToggled(clock: clock, enabled: enable)),
                   toggleWeekday: (weekday) => context.read<AlarmClockBloc>().add(
                     AlarmClockWeekdayToggled(
-                      alarm: alarm,
+                      clock: clock,
                       weekday: weekday,
                       message: AppLocalizations.of(context)!.infoMsgWeekdayIsEmpty,
                     ),
@@ -60,8 +61,7 @@ class HomeScreen extends StatelessWidget {
                 );
               },
             ),
-            AlarmClockDialogLoaded(alarm: final alarm) => const SizedBox.shrink(), // 處理單一鬧鐘載入狀態
-            AlarmClockSnackbarLoaded() => const SizedBox.shrink(),
+            _ => const SizedBox.shrink(),
           };
         },
       ),
@@ -78,8 +78,8 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         BlocListener<DialogBloc, DialogState>(
-          listener: (context, state) {
-            switch (state) {
+          listener: (context, dialogState) {
+            switch (dialogState) {
               case DialogClose():
                 Navigator.of(context).pop();
               case DialogReady():
@@ -87,15 +87,35 @@ class HomeScreen extends StatelessWidget {
                   barrierDismissible: false,
                   context: context,
                   builder: (context) => BlocBuilder<DialogBloc, DialogState>(
-                    builder: (context, dialogState) {
-                      if (dialogState case (DialogReady(model: final model) || DialogResized(model: final model))) {
-                        return core.DialogWidget(model: model);
+                    builder: (context, state) {
+                      if (state case (DialogReady(model: final model) || DialogResized(model: final model))) {
+                        return core.DialogWidget(
+                          model: model.copyWith(
+                            contents: BlocBuilder<AlarmClockFormBloc, AlarmClockFormState>(
+                              builder: (context, state) {
+                                switch (state) {
+                                  case AlarmClockFormLoading():
+                                    debugPrint('=1=AlarmClockFormLoading');
+                                    return AlarmEditWidget(
+                                      form: AlarmClockForm.init(clock: AlarmClock.init(TimeOfDay.now())),
+                                    );
+                                  case AlarmClockFormLoaded(form: final form):
+                                    debugPrint('=2=AlarmClockFormLoaded');
+                                    return AlarmEditWidget(form: form);
+                                  default:
+                                    return const SizedBox.shrink();
+                                }
+                              },
+                            ),
+                          ),
+                        );
                       }
                       return const SizedBox.shrink();
                     },
                   ),
                 );
               default:
+              // do nothing
             }
           },
           child: BlocBuilder<DialogBloc, DialogState>(
@@ -105,30 +125,57 @@ class HomeScreen extends StatelessWidget {
                 child: FloatingActionButton(
                   heroTag: null,
                   child: const FaIcon(FontAwesomeIcons.plus),
-                  onPressed: () => context.read<DialogBloc>().add(
-                    DialogOpened(
-                      model: DialogModel(
-                        title: AppLocalizations.of(context)!.clockCreateTitle,
-                        titleHeight: Constant.dialogHeaderHeight.h,
-                        contents: Container(), // todo: use alarm form widget
-                        contentHeight: Constant.dialogContentHeight.h,
-                        fallbackHeight: Constant.dialogContentHeight.h,
-                        footer: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            core.DialogFooterButton(
-                              label: AppLocalizations.of(context)!.cancel,
-                              onPressed: () => context.read<DialogBloc>().add(DialogClosed()),
+                  onPressed: () {
+                    final clock = AlarmClock.init(TimeOfDay.now());
+                    context.read<AlarmClockFormBloc>().add(
+                      AlarmClockDialogOpened(
+                        form: AlarmClockForm.init(
+                          clock: clock,
+                          onPressDayPeriod: (index) =>
+                              context.read<AlarmClockFormBloc>().add(AlarmClockDayPeriodPressed(index: index)),
+                          toggleEnable: (enabled) =>
+                              context.read<AlarmClockFormBloc>().add(AlarmClockFormEnableToggled(enabled: enabled)),
+                          toggleWeekday: (weekday) => context.read<AlarmClockFormBloc>().add(
+                            AlarmClockFormWeekdayToggled(
+                              weekday: weekday,
+                              message: AppLocalizations.of(context)!.infoMsgWeekdayIsEmpty,
                             ),
-                            // todo: use alarm bloc to save alarm
-                            core.DialogFooterButton(label: AppLocalizations.of(context)!.save, onPressed: () => null),
-                          ],
+                          ),
+                          toggleVibration: (vibration) => context.read<AlarmClockFormBloc>().add(
+                            AlarmClockFormVibrationToggled(vibration: vibration),
+                          ),
+                          changeRingtone: (ringtone) =>
+                              context.read<AlarmClockFormBloc>().add(AlarmClockFormRingtoneChanged(ringtone: ringtone)),
+                          playRingtone: (ringtone) =>
+                              context.read<AlarmClockFormBloc>().add(AlarmClockFormRingtonePlayed(ringtone: ringtone)),
+                          stopRingtone: () => context.read<AlarmClockFormBloc>().add(AlarmClockFormRingtoneStopped()),
                         ),
-                        footerHeight: Constant.dialogFooterHeight.h,
                       ),
-                    ),
-                  ),
+                    );
+                    context.read<DialogBloc>().add(
+                      DialogOpened(
+                        model: DialogModel(
+                          title: AppLocalizations.of(context)!.clockCreateTitle,
+                          titleHeight: Constant.dialogHeaderHeight.h,
+                          contentHeight: Constant.dialogContentHeight.h,
+                          fallbackHeight: Constant.dialogContentHeight.h,
+                          footer: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              core.DialogFooterButton(
+                                label: AppLocalizations.of(context)!.cancel,
+                                onPressed: () => context.read<DialogBloc>().add(DialogClosed()),
+                              ),
+                              // todo: 之後用鬧鐘區塊(Alarm Bloc)來儲存鬧鐘(alarm)
+                              core.DialogFooterButton(label: AppLocalizations.of(context)!.save, onPressed: () => null),
+                            ],
+                          ),
+                          footerHeight: Constant.dialogFooterHeight.h,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               );
             },

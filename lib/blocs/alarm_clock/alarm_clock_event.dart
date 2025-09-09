@@ -15,50 +15,21 @@ final class AlarmClockListed extends AlarmClockEvent {
 }
 
 final class AlarmClockEnableToggled extends AlarmClockEvent {
-  final AlarmClock alarm;
+  final AlarmClock clock;
   final bool enabled;
 
-  const AlarmClockEnableToggled({required this.alarm, required this.enabled});
+  const AlarmClockEnableToggled({required this.clock, required this.enabled});
 
   @override
-  List<Object?> get props => [alarm, enabled];
+  List<Object?> get props => [clock, enabled];
 }
 
 final class AlarmClockWeekdayToggled extends AlarmClockEvent {
-  final AlarmClock alarm;
-  final Weekday weekday;
+  final AlarmClock clock;
+  final core.Weekday weekday;
   final String? message;
-  const AlarmClockWeekdayToggled({required this.alarm, required this.weekday, this.message});
+  const AlarmClockWeekdayToggled({required this.clock, required this.weekday, this.message});
 
   @override
-  List<Object?> get props => [alarm, weekday, message];
+  List<Object?> get props => [clock, weekday, message];
 }
-
-class AlarmClockAdded extends AlarmClockEvent {
-  final AlarmClock alarm;
-  const AlarmClockAdded({required this.alarm});
-
-  @override
-  List<Object?> get props => [alarm];
-}
-
-class AlarmClockUpdated extends AlarmClockEvent {
-  final AlarmClock alarm;
-  const AlarmClockUpdated({required this.alarm});
-
-  @override
-  List<Object?> get props => [alarm];
-}
-
-class AlarmClockDeleted extends AlarmClockEvent {
-  final AlarmClock alarm;
-  const AlarmClockDeleted({required this.alarm});
-
-  @override
-  List<Object?> get props => [alarm];
-}
-
-// final class AlarmClockDialogOpened extends AlarmClockEvent {
-//   final AlarmClock alarm;
-//   const AlarmClockDialogOpened({required this.alarm});
-// }

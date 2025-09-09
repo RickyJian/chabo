@@ -9,22 +9,13 @@ sealed class AlarmClockState extends Equatable {
 
 class AlarmClockInitial extends AlarmClockState {}
 
-// class AlarmClockDialogLoaded extends AlarmClockState {
-//   final AlarmClock alarm;
-
-//   const AlarmClockDialogLoaded({required this.alarm});
-
-//   @override
-//   List<Object?> get props => [alarm];
-// }
-
 class AlarmClockListLoaded extends AlarmClockState {
-  final List<AlarmClock> alarms;
+  final List<AlarmClock> clocks;
 
-  const AlarmClockListLoaded({required this.alarms});
+  const AlarmClockListLoaded({required this.clocks});
 
   @override
-  List<Object?> get props => [alarms];
+  List<Object?> get props => [clocks];
 }
 
 class AlarmClockSnackbarLoaded extends AlarmClockState {

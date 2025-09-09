@@ -1,6 +1,10 @@
 class Constant {
   Constant._();
 
+  /// common
+  static const double defaultBorderRadius = 10;
+  static const double defaultBorderWidth = 1.5;
+
   /// card section
   static const double outerMarginTop = 15;
   static const double outerMarginWidth = 15;

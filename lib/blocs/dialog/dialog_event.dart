@@ -9,11 +9,12 @@ sealed class DialogEvent extends Equatable {
 
 final class DialogOpened extends DialogEvent {
   final DialogModel model;
+  final String? formId;
 
-  const DialogOpened({required this.model});
+  const DialogOpened({required this.model, this.formId});
 
   @override
-  List<Object?> get props => [model];
+  List<Object?> get props => [model, formId];
 }
 
 final class KeyboardChanged extends DialogEvent {

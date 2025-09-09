@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class DialogModel {
   final String title;
   final double titleHeight;
-  final Widget contents;
+  final Widget? contents;
   final double contentHeight;
   final double fallbackHeight;
   final Widget? footer;
@@ -12,7 +12,7 @@ class DialogModel {
   const DialogModel({
     required this.title,
     required this.titleHeight,
-    required this.contents,
+    this.contents,
     required this.contentHeight,
     required this.fallbackHeight,
     this.footer,

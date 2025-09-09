@@ -7,13 +7,13 @@ import 'package:chabo/core/extensions/extensions.dart';
 import 'constant.dart';
 
 class AlarmListWidget extends StatelessWidget {
-  final AlarmClock alarm;
+  final AlarmClock clock;
   final bool isLast;
   final Function(bool value) toggleEnable;
   final Function(Weekday weekday) toggleWeekday;
 
   const AlarmListWidget({
-    required this.alarm,
+    required this.clock,
     this.isLast = false,
     required this.toggleEnable,
     required this.toggleWeekday,
@@ -46,7 +46,7 @@ class AlarmListWidget extends StatelessWidget {
             children: [
               Text(
                 // TODO: make `:` in center position
-                '${alarm.period == DayPeriod.am ? 'AM' : 'PM'} ${alarm.hour}:${alarm.minute}',
+                '${clock.period == DayPeriod.am ? 'AM' : 'PM'} ${clock.hour}:${clock.minute}',
                 style: TextStyle(fontSize: Constant.timeFontSize.sp),
               ),
               const Spacer(),
@@ -59,7 +59,7 @@ class AlarmListWidget extends StatelessWidget {
           SizedBox(
             width: Constant.farawayWidth.w,
             height: Constant.farawayHeight.h,
-            child: alarm.status == Status.enabled
+            child: clock.status == Status.enabled
                 ? Container(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -79,15 +79,15 @@ class AlarmListWidget extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(right: Constant.labelIconPaddingRight.w),
                     child: Icon(
-                      color: alarm.name.isEmpty ? Colors.black45 : Colors.black,
+                      color: clock.name.isEmpty ? Colors.black45 : Colors.black,
                       Icons.label_outline_rounded,
                       size: Constant.labelFontSize.sp * Constant.labelFontRatio,
                     ),
                   ),
                   Text(
-                    alarm.name.isEmpty ? AppLocalizations.of(context)!.labelEmpty : alarm.name,
+                    clock.name.isEmpty ? AppLocalizations.of(context)!.labelEmpty : clock.name,
                     style: TextStyle(
-                      color: alarm.name.isEmpty ? Colors.black45 : Colors.black,
+                      color: clock.name.isEmpty ? Colors.black45 : Colors.black,
                       fontSize: Constant.labelFontSize.sp,
                     ),
                   ),
@@ -98,7 +98,7 @@ class AlarmListWidget extends StatelessWidget {
                 width: Constant.switchWidth.w,
                 child: FittedBox(
                   alignment: Alignment.center,
-                  child: Switch(value: alarm.status == Status.enabled ? true : false, onChanged: toggleEnable),
+                  child: Switch(value: clock.status == Status.enabled ? true : false, onChanged: toggleEnable),
                 ),
               ),
             ],
@@ -113,7 +113,7 @@ class AlarmListWidget extends StatelessWidget {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black, width: Constant.weekdayBorderWidth),
-                          color: alarm.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
+                          color: clock.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
                           shape: BoxShape.circle,
                         ),
                         height: Constant.weekdaySize.r,
