@@ -3,14 +3,10 @@ package github.com.chabo
 import android.content.Context
 import android.graphics.Rect
 import android.media.AudioAttributes
-import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
-import android.os.Build
 import android.view.View
-import androidx.annotation.RequiresApi
-import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
@@ -82,14 +78,20 @@ class MainActivity : FlutterActivity() {
         val manager = RingtoneManager(context)
         manager.setType(RingtoneManager.TYPE_ALARM)
         val cursor = manager.cursor
-        val ringtones = mutableListOf<String>()
-        while (cursor.moveToNext()) {
-            val name = manager.getRingtone(cursor.position).getTitle(this)
-            val uri = manager.getRingtoneUri(cursor.position).toString()
-            // TODO: use `kotlin-serialization` instead
-            ringtones.add("{\"name\": \"$name\", \"uri\": \"$uri\"}")
+        cursor.use { c ->
+            if (c == null || !c.moveToNext()) {
+                return emptyList()
+            }
+
+            val ringtones = mutableListOf<String>()
+            do {
+                val name = c.getString(RingtoneManager.TITLE_COLUMN_INDEX)
+                val id = c.getLong(RingtoneManager.ID_COLUMN_INDEX)
+                val uri = c.getString(RingtoneManager.URI_COLUMN_INDEX)
+                ringtones.add("{\"name\": \"$name\", \"uri\": \"$uri/$id\"}")
+            } while (c.moveToNext())
+            return ringtones
         }
-        return ringtones
     }
 
     private lateinit var player: MediaPlayer
