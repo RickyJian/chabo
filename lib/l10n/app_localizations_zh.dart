@@ -85,4 +85,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get comma => '：';
+
+  @override
+  String get errMsgHourInvalid => '請確認您輸入的小時數值。';
+
+  @override
+  String get errMsgHourOutOfRange => '小時請設定為 0 至 23。';
+
+  @override
+  String get errMsgMinuteInvalid => '請確認您輸入的分鐘數值。';
+
+  @override
+  String get errMsgMinuteOutOfRange => '分鐘請設定為 0 至 59。';
+
+  @override
+  String get errMsgLabelOutOfLength => '鬧鐘標籤請限制在 10 字內。';
+
+  @override
+  String get errMsgUnknown => '請聯繫開發人員，協助排除異常。';
 }

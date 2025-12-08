@@ -5,9 +5,10 @@ class TextEditComponent {
   final TextEditingController controller;
   final bool autoFocus;
   final FocusNode? node;
-  FocusNode? nextNode;
+  final Function(String value)? onChanged;
+  final FocusNode? nextNode;
 
-  TextEditComponent({required this.controller, this.autoFocus = false, this.node, this.nextNode});
+  TextEditComponent({required this.controller, this.autoFocus = false, this.node, this.nextNode, this.onChanged});
 }
 
 class TimeRangeFormatter extends TextInputFormatter {

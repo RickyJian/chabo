@@ -86,4 +86,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get comma => ':';
+
+  @override
+  String get errMsgHourInvalid => 'Kindly confirm the hour input.';
+
+  @override
+  String get errMsgHourOutOfRange => 'Please set the hour between 0 and 23.';
+
+  @override
+  String get errMsgMinuteInvalid => 'Kindly confirm the minute input.';
+
+  @override
+  String get errMsgMinuteOutOfRange =>
+      'Please set the minute between 0 and 59.';
+
+  @override
+  String get errMsgLabelOutOfLength =>
+      'Please limit the label to 10 characters.';
+
+  @override
+  String get errMsgUnknown => 'Please contact the developer for assistance.';
 }

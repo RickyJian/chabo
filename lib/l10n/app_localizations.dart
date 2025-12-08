@@ -253,6 +253,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **':'**
   String get comma;
+
+  /// No description provided for @errMsgHourInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Kindly confirm the hour input.'**
+  String get errMsgHourInvalid;
+
+  /// No description provided for @errMsgHourOutOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Please set the hour between 0 and 23.'**
+  String get errMsgHourOutOfRange;
+
+  /// No description provided for @errMsgMinuteInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Kindly confirm the minute input.'**
+  String get errMsgMinuteInvalid;
+
+  /// No description provided for @errMsgMinuteOutOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Please set the minute between 0 and 59.'**
+  String get errMsgMinuteOutOfRange;
+
+  /// No description provided for @errMsgLabelOutOfLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Please limit the label to 10 characters.'**
+  String get errMsgLabelOutOfLength;
+
+  /// No description provided for @errMsgUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Please contact the developer for assistance.'**
+  String get errMsgUnknown;
 }
 
 class _AppLocalizationsDelegate

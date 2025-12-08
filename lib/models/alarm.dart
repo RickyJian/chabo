@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:chabo/core/enums/enums.dart';
+import 'package:chabo/repositories/constant.dart' as db_constant;
 import 'package:ulid/ulid.dart';
 import 'ringtone.dart';
 
@@ -68,6 +69,35 @@ class AlarmClock {
       ringtone: ringtone ?? this.ringtone,
     );
   }
+
+  Map<String, dynamic> toMap() => {
+    db_constant.Constant.columnId: id,
+    db_constant.Constant.columnHour: hour,
+    db_constant.Constant.columnMinute: minute,
+    db_constant.Constant.columnPeriod: period.index,
+    db_constant.Constant.columnName: name,
+    db_constant.Constant.columnWeekdays: Weekday.bitMask(weekdays),
+    db_constant.Constant.columnStatus: status.index,
+    db_constant.Constant.columnVibration: vibration ? 1 : 0,
+    db_constant.Constant.columnRingtoneName: ringtone?.name ?? '',
+    db_constant.Constant.columnRingtoneUri: ringtone?.uri ?? '',
+  };
+
+  AlarmClock.fromMap(Map<String, dynamic> map)
+    : id = map[db_constant.Constant.columnId] as String,
+      hour = map[db_constant.Constant.columnHour] as int,
+      minute = map[db_constant.Constant.columnMinute] as int,
+      period = DayPeriod.values[map[db_constant.Constant.columnPeriod] as int],
+      name = map[db_constant.Constant.columnName] as String,
+      weekdays = Weekday.fromMask(map[db_constant.Constant.columnWeekdays] as int),
+      status = Status.values[map[db_constant.Constant.columnStatus] as int],
+      vibration = map[db_constant.Constant.columnVibration] == 1,
+      ringtone = map[db_constant.Constant.columnRingtoneName] != null
+          ? SystemAlarmRingtone(
+              name: map[db_constant.Constant.columnRingtoneName] as String,
+              uri: map[db_constant.Constant.columnRingtoneUri] as String,
+            )
+          : null;
 
   AlarmClock togglePeriod(DayPeriod period) => copyWith(period: period);
 

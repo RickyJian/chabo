@@ -24,5 +24,11 @@
   "save": "存檔",
   "clockCreateTitle": "新增鬧鐘",
   "setting": "設定",
-  "comma": "："
+  "comma": "：",
+  "errMsgHourInvalid": "請確認您輸入的小時數值。",
+  "errMsgHourOutOfRange": "小時請設定為 0 至 23。",
+  "errMsgMinuteInvalid": "請確認您輸入的分鐘數值。",
+  "errMsgMinuteOutOfRange": "分鐘請設定為 0 至 59。",
+  "errMsgLabelOutOfLength": "鬧鐘標籤請限制在 10 字內。",
+  "errMsgUnknown": "請聯繫開發人員，協助排除異常。"
 } 

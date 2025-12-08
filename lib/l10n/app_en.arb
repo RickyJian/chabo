@@ -24,5 +24,11 @@
   "save": "save",
   "clockCreateTitle": "New Alarm Clock",
   "setting": "Setting",
-  "comma": ":"
+  "comma": ":",
+  "errMsgHourInvalid": "Kindly confirm the hour input.",
+  "errMsgHourOutOfRange": "Please set the hour between 0 and 23.",
+  "errMsgMinuteInvalid": "Kindly confirm the minute input.",
+  "errMsgMinuteOutOfRange": "Please set the minute between 0 and 59.",
+  "errMsgLabelOutOfLength": "Please limit the label to 10 characters.",
+  "errMsgUnknown": "Please contact the developer for assistance."
 }

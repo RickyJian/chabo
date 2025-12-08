@@ -102,6 +102,7 @@ class AlarmEditWidget extends StatelessWidget {
                     inputFormatters: [LengthLimitingTextInputFormatter(10)],
                     textAlign: TextAlign.left,
                     textAlignVertical: TextAlignVertical.center,
+                    onChanged: (value) => form.onLabelChanged?.call(value),
                     onFieldSubmitted: (_) => form.labelController.node?.unfocus(),
                     style: TextStyle(
                       fontSize: Constant.dialogFontSize.sp,
@@ -173,70 +174,74 @@ class AlarmEditWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              onTap: () => showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                enableDrag: false,
-                builder: (context) => Container(
-                  height: Constant.ringtoneBottomSheetHeight.h,
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(Constant.defaultBorderRadius),
-                      topRight: Radius.circular(Constant.defaultBorderRadius),
-                    ),
-                    color: Colors.white,
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: Constant.ringtoneTitleHeight.h,
-                        width: double.infinity,
-                        child: Center(
-                          child: Text(
-                            AppLocalizations.of(context)!.alarmSystem,
-                            style: TextStyle(fontSize: Constant.ringtoneFontSize.sp),
-                          ),
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  enableDrag: false,
+                  builder: (context) {
+                    return Container(
+                      height: Constant.ringtoneBottomSheetHeight.h,
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(Constant.defaultBorderRadius),
+                          topRight: Radius.circular(Constant.defaultBorderRadius),
                         ),
+                        color: Colors.white,
                       ),
-                      const Divider(),
-                      form.ringtones == null
-                          ? const SizedBox.shrink()
-                          : Expanded(
-                              child: ListView(
-                                children: [
-                                  for (final alarm in form.ringtones!)
-                                    RadioListTile(
-                                      dense: true,
-                                      value: alarm,
-                                      groupValue: form.clock.ringtone,
-                                      title: Row(
-                                        children: [
-                                          const Expanded(flex: 2, child: Icon(Icons.alarm_outlined)),
-                                          Expanded(
-                                            flex: 8,
-                                            child: Text(alarm.name, style: TextStyle(fontSize: 20.sp)),
-                                          ),
-                                        ],
-                                      ),
-                                      controlAffinity: ListTileControlAffinity.trailing,
-                                      onChanged: (selected) {
-                                        if (selected != null) {
-                                          form.changeRingtone?.call(selected);
-                                          Navigator.pop(context);
-                                        }
-                                      },
-                                    ),
-                                ],
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: Constant.ringtoneTitleHeight.h,
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                AppLocalizations.of(context)!.alarmSystem,
+                                style: TextStyle(fontSize: Constant.ringtoneFontSize.sp),
                               ),
                             ),
-                    ],
-                  ),
-                ),
-              ),
+                          ),
+                          const Divider(),
+                          form.ringtones == null
+                              ? const SizedBox.shrink()
+                              : Expanded(
+                                  child: ListView(
+                                    children: [
+                                      for (final alarm in form.ringtones!)
+                                        RadioListTile(
+                                          dense: true,
+                                          value: alarm,
+                                          groupValue: form.clock.ringtone,
+                                          title: Row(
+                                            children: [
+                                              const Expanded(flex: 2, child: Icon(Icons.alarm_outlined)),
+                                              Expanded(
+                                                flex: 8,
+                                                child: Text(alarm.name, style: TextStyle(fontSize: 20.sp)),
+                                              ),
+                                            ],
+                                          ),
+                                          controlAffinity: ListTileControlAffinity.trailing,
+                                          onChanged: (selected) {
+                                            if (selected != null) {
+                                              form.changeRingtone?.call(selected);
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
             ),
             onLongPressStart: (_) {
-              debugPrint('==onLongPressStart');
               if (form.clock.ringtone case final ringtone?) {
                 form.playRingtone?.call(ringtone);
               }
@@ -287,6 +292,7 @@ class AlarmEditWidget extends StatelessWidget {
       textAlignVertical: TextAlignVertical.center,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => controller.nextNode?.requestFocus(),
+      onChanged: controller.onChanged,
       style: TextStyle(
         fontSize: Constant.timeFieldFontSizePadding.sp,
         height: 1, // 1 make text align vertical center

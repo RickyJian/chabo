@@ -6,15 +6,21 @@ import 'package:chabo/models/models.dart';
 import 'package:chabo/core/core.dart' as core;
 import 'dart:convert';
 import 'dart:developer';
+import 'package:chabo/repositories/reporistories.dart';
+import 'package:intl/date_symbols.dart';
 
 part 'alarm_clock_form_event.dart';
 part 'alarm_clock_form_state.dart';
 
 class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> {
   static const MethodChannel alarmChannel = MethodChannel('chabo/alarm');
+  final AlarmClockRepository _repository = AlarmClockRepository();
 
   AlarmClockFormBloc() : super(AlarmClockFormInitial()) {
     on<AlarmClockDialogOpened>(_onAlarmClockDialogOpened);
+    on<AlarmClockFormHourChanged>(_onAlarmClockFormHourChanged);
+    on<AlarmClockFormMinuteChanged>(_onAlarmClockFormMinuteChanged);
+    on<AlarmClockFormLabelChanged>(_onAlarmClockFormLabelChanged);
     on<AlarmClockDayPeriodPressed>(_onAlarmClockDayPeriodPressed);
     on<AlarmClockFormEnableToggled>(_onAlarmClockFormEnableToggled);
     on<AlarmClockFormWeekdayToggled>(_onAlarmClockFormWeekdayToggled);
@@ -22,10 +28,10 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
     on<AlarmClockFormRingtoneChanged>(_onAlarmClockFormRingtoneChanged);
     on<AlarmClockFormRingtonePlayed>(_onAlarmClockFormRingtonePlayed);
     on<AlarmClockFormRingtoneStopped>(_onAlarmClockFormRingtoneStopped);
+    on<AlarmClockFormAdded>(_onAlarmClockFormAdded);
   }
 
   void _onAlarmClockDialogOpened(AlarmClockDialogOpened event, Emitter<AlarmClockFormState> emit) async {
-    // todo: enhance query system ringtones performance
     emit(AlarmClockFormLoading());
 
     final ringtones = await fetchSystemRingtones();
@@ -37,6 +43,55 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
         ),
       ),
     );
+  }
+
+  void _onAlarmClockFormHourChanged(AlarmClockFormHourChanged event, Emitter<AlarmClockFormState> emit) {
+    if (state case AlarmClockFormLoaded(form: final form)) {
+      var hour = int.tryParse(event.value);
+      if (hour == null) {
+        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.hourInvalid));
+      } else if (hour < 0 || hour > 23) {
+        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.hourOutOfRange));
+      } else {
+        emit(
+          AlarmClockFormLoaded(
+            form: form.copyWith(clock: form.clock.copyWith(hour: hour)),
+          ),
+        );
+      }
+    }
+  }
+
+  void _onAlarmClockFormMinuteChanged(AlarmClockFormMinuteChanged event, Emitter<AlarmClockFormState> emit) {
+    if (state case AlarmClockFormLoaded(form: final form)) {
+      var minute = int.tryParse(event.value);
+      if (minute == null) {
+        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.minuteInvalid));
+      } else if (minute < 0 || minute > 59) {
+        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.minuteOutOfRange));
+      } else {
+        emit(
+          AlarmClockFormLoaded(
+            form: form.copyWith(clock: form.clock.copyWith(minute: minute)),
+          ),
+        );
+      }
+    }
+  }
+
+  void _onAlarmClockFormLabelChanged(AlarmClockFormLabelChanged event, Emitter<AlarmClockFormState> emit) {
+    if (state case AlarmClockFormLoaded(form: final form)) {
+      var name = form.labelController.controller.text.trim();
+      if (name.length > 10) {
+        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.labelOutOfLength));
+      } else {
+        emit(
+          AlarmClockFormLoaded(
+            form: form.copyWith(clock: form.clock.copyWith(name: name)),
+          ),
+        );
+      }
+    }
   }
 
   void _onAlarmClockDayPeriodPressed(AlarmClockDayPeriodPressed event, Emitter<AlarmClockFormState> emit) {
@@ -122,4 +177,11 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
 
   Future<void> stopAlarm() async =>
       await alarmChannel.invokeMethod('stopSystemAlarm').catchError((error) => log(error));
+
+  Future<void> _onAlarmClockFormAdded(AlarmClockFormAdded event, Emitter<AlarmClockFormState> emit) async {
+    if (state case AlarmClockFormLoaded(form: final form)) {
+      await _repository.createAlarmClock(form.clock);
+      emit(AlarmClockFormSuccess());
+    }
+  }
 }

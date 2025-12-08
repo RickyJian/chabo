@@ -8,10 +8,15 @@ class AlarmClockForm {
   final AlarmClock clock;
 
   final TextEditComponent hourController;
+  final Function(String value)? onHourChanged;
+
   final TextEditComponent minuteController;
+  final Function(String value)? onMinuteChanged;
+
   final Function(int index)? onPressDayPeriod;
 
   final TextEditComponent labelController;
+  final Function(String value)? onLabelChanged;
 
   final Function(bool value)? toggleEnable;
   final Function(bool value)? toggleVibration;
@@ -24,6 +29,9 @@ class AlarmClockForm {
 
   AlarmClockForm.init({
     required this.clock,
+    this.onHourChanged,
+    this.onMinuteChanged,
+    this.onLabelChanged,
     this.onPressDayPeriod,
     this.toggleEnable,
     this.toggleWeekday,
@@ -35,20 +43,29 @@ class AlarmClockForm {
          controller: TextEditingController(text: clock.hour.toString().padLeft(2, '0')),
          autoFocus: true,
          node: FocusNode(),
+         onChanged: onHourChanged,
        ),
        minuteController = TextEditComponent(
          controller: TextEditingController(text: clock.minute.toString().padLeft(2, '0')),
          node: FocusNode(),
+         onChanged: onMinuteChanged,
        ),
-       labelController = TextEditComponent(controller: TextEditingController(), node: FocusNode()),
+       labelController = TextEditComponent(
+         controller: TextEditingController(),
+         node: FocusNode(),
+         onChanged: onLabelChanged,
+       ),
        ringtones = null;
 
   AlarmClockForm copyWith({
     AlarmClock? clock,
     TextEditComponent? hourController,
+    Function(String value)? onHourChanged,
     TextEditComponent? minuteController,
+    Function(String value)? onMinuteChanged,
     Function(int index)? onPressDayPeriod,
     TextEditComponent? labelController,
+    Function(String value)? onLabelChanged,
     Function(bool value)? toggleEnable,
     Function(bool value)? toggleVibration,
     Function(core.Weekday weekday)? toggleWeekday,
@@ -60,9 +77,12 @@ class AlarmClockForm {
     return AlarmClockForm._internal(
       clock: clock ?? this.clock,
       hourController: hourController ?? this.hourController,
+      onHourChanged: onHourChanged ?? this.onHourChanged,
       minuteController: minuteController ?? this.minuteController,
+      onMinuteChanged: onMinuteChanged ?? this.onMinuteChanged,
       onPressDayPeriod: onPressDayPeriod ?? this.onPressDayPeriod,
       labelController: labelController ?? this.labelController,
+      onLabelChanged: onLabelChanged ?? this.onLabelChanged,
       toggleEnable: toggleEnable ?? this.toggleEnable,
       toggleVibration: toggleVibration ?? this.toggleVibration,
       toggleWeekday: toggleWeekday ?? this.toggleWeekday,
@@ -77,9 +97,12 @@ class AlarmClockForm {
   AlarmClockForm._internal({
     required this.clock,
     required this.hourController,
+    required this.onHourChanged,
     required this.minuteController,
+    required this.onMinuteChanged,
     required this.onPressDayPeriod,
     required this.labelController,
+    required this.onLabelChanged,
     required this.toggleEnable,
     required this.toggleVibration,
     required this.toggleWeekday,

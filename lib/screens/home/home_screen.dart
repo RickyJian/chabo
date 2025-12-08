@@ -21,10 +21,15 @@ class HomeScreen extends StatelessWidget {
       centerTitle: true,
     ),
     body: BlocListener<AlarmClockBloc, AlarmClockState>(
-      listenWhen: (previous, current) => current is AlarmClockSnackbarLoaded,
+      listenWhen: (previous, current) {
+        return current is AlarmClockSnackbarLoaded;
+      },
       listener: (context, state) {
-        if (state case AlarmClockSnackbarLoaded(message: final message)) {
-          core.Snackbar.showSnackbar(context: context, height: Constant.notificationHeight, message: message);
+        switch (state) {
+          case AlarmClockSnackbarLoaded(message: final message):
+            core.Snackbar.showSnackbar(context: context, height: Constant.notificationHeight, message: message);
+          default:
+          // do nothing
         }
       },
       child: BlocBuilder<AlarmClockBloc, AlarmClockState>(
@@ -66,47 +71,114 @@ class HomeScreen extends StatelessWidget {
             onPressed: () => print('change grid mode'),
           ),
         ),
-        BlocListener<DialogBloc, DialogState>(
-          listener: (context, dialogState) {
-            switch (dialogState) {
-              case DialogClose():
-                Navigator.of(context).pop();
-              case DialogReady():
-                showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) => BlocBuilder<DialogBloc, DialogState>(
-                    builder: (context, state) {
-                      if (state case (DialogReady(model: final model) || DialogResized(model: final model))) {
-                        return core.DialogWidget(
-                          model: model.copyWith(
-                            contents: BlocBuilder<AlarmClockFormBloc, AlarmClockFormState>(
-                              builder: (context, state) {
-                                switch (state) {
-                                  case AlarmClockFormLoading():
-                                    debugPrint('=1=AlarmClockFormLoading');
-                                    return AlarmEditWidget(
-                                      form: AlarmClockForm.init(clock: AlarmClock.init(TimeOfDay.now())),
-                                    );
-                                  case AlarmClockFormLoaded(form: final form):
-                                    debugPrint('=2=AlarmClockFormLoaded');
-                                    return AlarmEditWidget(form: form);
-                                  default:
-                                    return const SizedBox.shrink();
-                                }
-                              },
-                            ),
-                          ),
+        MultiBlocListener(
+          listeners: [
+            BlocListener<DialogBloc, DialogState>(
+              listener: (context, dialogState) {
+                switch (dialogState) {
+                  case DialogClose():
+                    Navigator.of(context).pop();
+                  case DialogReady():
+                    showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) => BlocBuilder<DialogBloc, DialogState>(
+                        builder: (context, state) {
+                          if (state case (DialogReady(model: final model) || DialogResized(model: final model))) {
+                            return core.DialogWidget(
+                              model: model.copyWith(
+                                contents: BlocBuilder<AlarmClockFormBloc, AlarmClockFormState>(
+                                  builder: (context, state) {
+                                    switch (state) {
+                                      case AlarmClockFormLoading():
+                                        return AlarmEditWidget(
+                                          form: AlarmClockForm.init(clock: AlarmClock.init(TimeOfDay.now())),
+                                        );
+                                      case AlarmClockFormLoaded(form: final form):
+                                        return AlarmEditWidget(form: form);
+                                      default:
+                                        return const SizedBox.shrink();
+                                    }
+                                  },
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    );
+                  default:
+                  // do nothing
+                }
+              },
+            ),
+            BlocListener<AlarmClockFormBloc, AlarmClockFormState>(
+              listenWhen: (previous, current) {
+                if (current is AlarmClockFormLoaded && current.errorCode != null) {
+                  return true;
+                }
+                return current is AlarmClockFormSuccess;
+              },
+              listener: (context, formState) {
+                switch (formState) {
+                  case AlarmClockFormSuccess():
+                    // 關閉 Dialog
+                    context.read<DialogBloc>().add(DialogClosed());
+                    // 列表重新載入
+                    context.read<AlarmClockBloc>().add(AlarmClockListed());
+                  case AlarmClockFormLoaded(errorCode: final errorCode):
+                    // 跳出提示訊息
+                    switch (errorCode) {
+                      case core.AlarmClockFormErrorCode.hourInvalid:
+                        core.Snackbar.showSnackbar(
+                          context: context,
+                          height: Constant.notificationHeight,
+                          message: AppLocalizations.of(context)!.errMsgHourInvalid,
                         );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                );
-              default:
-              // do nothing
-            }
-          },
+                        break;
+                      case core.AlarmClockFormErrorCode.hourOutOfRange:
+                        core.Snackbar.showSnackbar(
+                          context: context,
+                          height: Constant.notificationHeight,
+                          message: AppLocalizations.of(context)!.errMsgHourOutOfRange,
+                        );
+                        break;
+                      case core.AlarmClockFormErrorCode.minuteInvalid:
+                        core.Snackbar.showSnackbar(
+                          context: context,
+                          height: Constant.notificationHeight,
+                          message: AppLocalizations.of(context)!.errMsgMinuteInvalid,
+                        );
+                        break;
+                      case core.AlarmClockFormErrorCode.minuteOutOfRange:
+                        core.Snackbar.showSnackbar(
+                          context: context,
+                          height: Constant.notificationHeight,
+                          message: AppLocalizations.of(context)!.errMsgMinuteOutOfRange,
+                        );
+                        break;
+                      case core.AlarmClockFormErrorCode.labelOutOfLength:
+                        core.Snackbar.showSnackbar(
+                          context: context,
+                          height: Constant.notificationHeight,
+                          message: AppLocalizations.of(context)!.errMsgLabelOutOfLength,
+                        );
+                        break;
+                      default:
+                        core.Snackbar.showSnackbar(
+                          context: context,
+                          height: Constant.notificationHeight,
+                          message: AppLocalizations.of(context)!.errMsgUnknown,
+                        );
+                        break;
+                    }
+                  default:
+                  // do nothing
+                }
+              },
+            ),
+          ],
           child: BlocBuilder<DialogBloc, DialogState>(
             builder: (context, state) {
               return Container(
@@ -115,11 +187,10 @@ class HomeScreen extends StatelessWidget {
                   heroTag: null,
                   child: const FaIcon(FontAwesomeIcons.plus),
                   onPressed: () {
-                    final clock = AlarmClock.init(TimeOfDay.now());
                     context.read<AlarmClockFormBloc>().add(
                       AlarmClockDialogOpened(
                         form: AlarmClockForm.init(
-                          clock: clock,
+                          clock: AlarmClock.init(TimeOfDay.now()),
                           onPressDayPeriod: (index) =>
                               context.read<AlarmClockFormBloc>().add(AlarmClockDayPeriodPressed(index: index)),
                           toggleEnable: (enabled) =>
@@ -156,8 +227,10 @@ class HomeScreen extends StatelessWidget {
                                 label: AppLocalizations.of(context)!.cancel,
                                 onPressed: () => context.read<DialogBloc>().add(DialogClosed()),
                               ),
-                              // todo: 之後用鬧鐘區塊(Alarm Bloc)來儲存鬧鐘(alarm)
-                              core.DialogFooterButton(label: AppLocalizations.of(context)!.save, onPressed: () => null),
+                              core.DialogFooterButton(
+                                label: AppLocalizations.of(context)!.save,
+                                onPressed: () => context.read<AlarmClockFormBloc>().add(AlarmClockFormAdded()),
+                              ),
                             ],
                           ),
                           footerHeight: Constant.dialogFooterHeight.h,
