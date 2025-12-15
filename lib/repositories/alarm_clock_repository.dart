@@ -11,4 +11,9 @@ class AlarmClockRepository {
   Future<List<AlarmClock>> listAlarmClocks() async {
     return await _helper.listAlarmClocks();
   }
+
+  Future<AlarmClock> getAlarmClock(String id) async {
+    final clocks = await _helper.listAlarmClocks(id: id);
+    return clocks.first;
+  }
 }

@@ -65,10 +65,14 @@ class DatabaseHelper {
     }
   }
 
-  Future<List<AlarmClock>> listAlarmClocks() async {
+  Future<List<AlarmClock>> listAlarmClocks({String? id}) async {
     try {
       final conn = await database;
-      final result = await conn.query(Constant.alarmClocksTable);
+      final result = await conn.query(
+        Constant.alarmClocksTable,
+        where: id == null ? null : '${Constant.columnId} = ?',
+        whereArgs: id == null ? null : [id],
+      );
       return result.map((alarmClock) => AlarmClock.fromMap(alarmClock)).toList();
     } catch (e) {
       rethrow;

@@ -11,12 +11,14 @@ class AlarmListWidget extends StatelessWidget {
   final bool isLast;
   final Function(bool value) toggleEnable;
   final Function(Weekday weekday) toggleWeekday;
+  final Function(String id) openDialog;
 
   const AlarmListWidget({
     required this.clock,
     this.isLast = false,
     required this.toggleEnable,
     required this.toggleWeekday,
+    required this.openDialog,
   });
 
   @override
@@ -50,10 +52,7 @@ class AlarmListWidget extends StatelessWidget {
                 style: TextStyle(fontSize: Constant.timeFontSize.sp),
               ),
               const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.settings_rounded),
-                onPressed: () => null, // TODO: open setting dialog
-              ),
+              IconButton(icon: const Icon(Icons.settings_rounded), onPressed: () => openDialog(clock.id)),
             ],
           ),
           SizedBox(

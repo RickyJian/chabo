@@ -7,7 +7,6 @@ import 'package:chabo/core/core.dart' as core;
 import 'dart:convert';
 import 'dart:developer';
 import 'package:chabo/repositories/reporistories.dart';
-import 'package:intl/date_symbols.dart';
 
 part 'alarm_clock_form_event.dart';
 part 'alarm_clock_form_state.dart';
@@ -35,14 +34,36 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
     emit(AlarmClockFormLoading());
 
     final ringtones = await fetchSystemRingtones();
-    emit(
-      AlarmClockFormLoaded(
-        form: event.form.copyWith(
-          ringtones: ringtones,
-          clock: event.form.clock.copyWith(ringtone: ringtones.first),
+
+    if (event.form case final form?) {
+      emit(
+        AlarmClockFormLoaded(
+          form: form.copyWith(
+            ringtones: ringtones,
+            clock: event.form!.clock.copyWith(ringtone: ringtones.first),
+          ),
         ),
-      ),
-    );
+      );
+    } else if (event.id case final id?) {
+      final clock = await _repository.getAlarmClock(id);
+      emit(
+        AlarmClockFormLoaded(
+          form: AlarmClockForm.init(
+            clock: clock,
+            onHourChanged: (value) => add(AlarmClockFormHourChanged(value: value)),
+            onMinuteChanged: (value) => add(AlarmClockFormMinuteChanged(value: value)),
+            onLabelChanged: (value) => add(AlarmClockFormLabelChanged(value: value)),
+            onPressDayPeriod: (index) => add(AlarmClockDayPeriodPressed(index: index)),
+            toggleEnable: (enabled) => add(AlarmClockFormEnableToggled(enabled: enabled)),
+            toggleWeekday: (weekday) => add(AlarmClockFormWeekdayToggled(weekday: weekday)),
+            toggleVibration: (vibration) => add(AlarmClockFormVibrationToggled(vibration: vibration)),
+            changeRingtone: (ringtone) => add(AlarmClockFormRingtoneChanged(ringtone: ringtone)),
+            playRingtone: (ringtone) => add(AlarmClockFormRingtonePlayed(ringtone: ringtone)),
+            stopRingtone: () => add(AlarmClockFormRingtoneStopped()),
+          ),
+        ),
+      );
+    }
   }
 
   void _onAlarmClockFormHourChanged(AlarmClockFormHourChanged event, Emitter<AlarmClockFormState> emit) {
