@@ -8,12 +8,11 @@ sealed class AlarmClockFormEvent extends Equatable {
 }
 
 class AlarmClockDialogOpened extends AlarmClockFormEvent {
-  final AlarmClockForm? form;
   final String? id;
-  const AlarmClockDialogOpened({this.form, this.id});
+  const AlarmClockDialogOpened({this.id});
 
   @override
-  List<Object?> get props => [form, id];
+  List<Object?> get props => [id];
 }
 
 class AlarmClockFormHourChanged extends AlarmClockFormEvent {
