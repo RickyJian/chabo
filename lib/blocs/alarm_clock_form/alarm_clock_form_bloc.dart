@@ -39,38 +39,31 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
     if (event.id case final id?) {
       clock = await _repository.getAlarmClock(id);
     } else {
-      clock = AlarmClock.init(TimeOfDay.now());
+      clock = AlarmClock.init(TimeOfDay.now())..copyWith(ringtone: ringtones.first);
     }
-    emit(
-      AlarmClockFormLoaded(
-        form: AlarmClockForm.init(
-          clock: clock.copyWith(ringtone: ringtones.first),
-          onHourChanged: (value) => add(AlarmClockFormHourChanged(value: value)),
-          onMinuteChanged: (value) => add(AlarmClockFormMinuteChanged(value: value)),
-          onLabelChanged: (value) => add(AlarmClockFormLabelChanged(value: value)),
-          onPressDayPeriod: (index) => add(AlarmClockDayPeriodPressed(index: index)),
-          toggleEnable: (enabled) => add(AlarmClockFormEnableToggled(enabled: enabled)),
-          toggleWeekday: (weekday) => add(AlarmClockFormWeekdayToggled(weekday: weekday)),
-          toggleVibration: (vibration) => add(AlarmClockFormVibrationToggled(vibration: vibration)),
-          changeRingtone: (ringtone) => add(AlarmClockFormRingtoneChanged(ringtone: ringtone)),
-          playRingtone: (ringtone) => add(AlarmClockFormRingtonePlayed(ringtone: ringtone)),
-          stopRingtone: () => add(AlarmClockFormRingtoneStopped()),
-        ),
-      ),
-    );
+    emit(AlarmClockFormLoaded(clock: clock, ringtones: ringtones));
   }
 
   void _onAlarmClockFormHourChanged(AlarmClockFormHourChanged event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(form: final form)) {
+    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
       var hour = int.tryParse(event.value);
       if (hour == null) {
-        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.hourInvalid));
+        emit(
+          AlarmClockFormLoaded(clock: clock, ringtones: ringtones, errorCode: core.AlarmClockFormErrorCode.hourInvalid),
+        );
       } else if (hour < 0 || hour > 23) {
-        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.hourOutOfRange));
+        emit(
+          AlarmClockFormLoaded(
+            clock: clock,
+            ringtones: ringtones,
+            errorCode: core.AlarmClockFormErrorCode.hourOutOfRange,
+          ),
+        );
       } else {
         emit(
           AlarmClockFormLoaded(
-            form: form.copyWith(clock: form.clock.copyWith(hour: hour)),
+            clock: clock.copyWith(hour: hour),
+            ringtones: ringtones,
           ),
         );
       }
@@ -78,16 +71,29 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
   }
 
   void _onAlarmClockFormMinuteChanged(AlarmClockFormMinuteChanged event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(form: final form)) {
+    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
       var minute = int.tryParse(event.value);
       if (minute == null) {
-        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.minuteInvalid));
+        emit(
+          AlarmClockFormLoaded(
+            clock: clock,
+            ringtones: ringtones,
+            errorCode: core.AlarmClockFormErrorCode.minuteInvalid,
+          ),
+        );
       } else if (minute < 0 || minute > 59) {
-        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.minuteOutOfRange));
+        emit(
+          AlarmClockFormLoaded(
+            clock: clock,
+            ringtones: ringtones,
+            errorCode: core.AlarmClockFormErrorCode.minuteOutOfRange,
+          ),
+        );
       } else {
         emit(
           AlarmClockFormLoaded(
-            form: form.copyWith(clock: form.clock.copyWith(minute: minute)),
+            clock: clock.copyWith(minute: minute),
+            ringtones: ringtones,
           ),
         );
       }
@@ -95,14 +101,21 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
   }
 
   void _onAlarmClockFormLabelChanged(AlarmClockFormLabelChanged event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(form: final form)) {
-      var name = form.labelController.controller.text.trim();
+    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
+      var name = event.value.trim();
       if (name.length > 10) {
-        emit(AlarmClockFormLoaded(form: form, errorCode: core.AlarmClockFormErrorCode.labelOutOfLength));
+        emit(
+          AlarmClockFormLoaded(
+            clock: clock,
+            ringtones: ringtones,
+            errorCode: core.AlarmClockFormErrorCode.labelOutOfLength,
+          ),
+        );
       } else {
         emit(
           AlarmClockFormLoaded(
-            form: form.copyWith(clock: form.clock.copyWith(name: name)),
+            clock: clock.copyWith(name: name),
+            ringtones: ringtones,
           ),
         );
       }
@@ -110,44 +123,45 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
   }
 
   void _onAlarmClockDayPeriodPressed(AlarmClockDayPeriodPressed event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(form: final form)) {
+    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
       emit(
         AlarmClockFormLoaded(
-          form: form.copyWith(clock: form.clock.togglePeriod(event.index == 0 ? DayPeriod.am : DayPeriod.pm)),
+          clock: clock.togglePeriod(event.index == 0 ? DayPeriod.am : DayPeriod.pm),
+          ringtones: ringtones,
         ),
       );
     }
   }
 
   void _onAlarmClockFormEnableToggled(AlarmClockFormEnableToggled event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(form: final form)) {
+    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
       emit(
         AlarmClockFormLoaded(
-          form: form.copyWith(
-            clock: form.clock.toggleEnable(event.enabled ? core.Status.enabled : core.Status.disabled),
-          ),
+          clock: clock.toggleEnable(event.enabled ? core.Status.enabled : core.Status.disabled),
+          ringtones: ringtones,
         ),
       );
     }
   }
 
   void _onAlarmClockFormWeekdayToggled(AlarmClockFormWeekdayToggled event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(form: final form)) {
-      emit(AlarmClockFormLoaded(form: form.copyWith(clock: form.clock.toggleWeekdays(event.weekday))));
+    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
+      emit(AlarmClockFormLoaded(clock: clock.toggleWeekdays(event.weekday), ringtones: ringtones));
     }
   }
 
   void _onAlarmClockFormVibrationToggled(AlarmClockFormVibrationToggled event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(form: final form)) {
-      emit(AlarmClockFormLoaded(form: form.copyWith(clock: form.clock.toggleVibration(event.vibration))));
+    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
+      emit(AlarmClockFormLoaded(clock: clock.toggleVibration(event.vibration), ringtones: ringtones));
     }
   }
 
   void _onAlarmClockFormRingtoneChanged(AlarmClockFormRingtoneChanged event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(form: final form)) {
+    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
       emit(
         AlarmClockFormLoaded(
-          form: form.copyWith(clock: form.clock.copyWith(ringtone: event.ringtone)),
+          clock: clock.copyWith(ringtone: event.ringtone),
+          ringtones: ringtones,
         ),
       );
     }
@@ -194,8 +208,8 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
       await alarmChannel.invokeMethod('stopSystemAlarm').catchError((error) => log(error));
 
   Future<void> _onAlarmClockFormAdded(AlarmClockFormAdded event, Emitter<AlarmClockFormState> emit) async {
-    if (state case AlarmClockFormLoaded(form: final form)) {
-      await _repository.createAlarmClock(form.clock);
+    if (state case AlarmClockFormLoaded(clock: final clock)) {
+      await _repository.createAlarmClock(clock);
       emit(AlarmClockFormSuccess());
     }
   }

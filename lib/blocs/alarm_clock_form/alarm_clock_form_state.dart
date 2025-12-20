@@ -12,13 +12,14 @@ class AlarmClockFormInitial extends AlarmClockFormState {}
 class AlarmClockFormLoading extends AlarmClockFormState {}
 
 class AlarmClockFormLoaded extends AlarmClockFormState {
-  final AlarmClockForm form;
+  final AlarmClock clock;
+  final List<SystemAlarmRingtone> ringtones;
   final core.AlarmClockFormErrorCode? errorCode;
 
-  const AlarmClockFormLoaded({required this.form, this.errorCode});
+  const AlarmClockFormLoaded({required this.clock, required this.ringtones, this.errorCode});
 
   @override
-  List<Object?> get props => [form];
+  List<Object?> get props => [clock, ringtones, errorCode];
 }
 
 class AlarmClockFormSuccess extends AlarmClockFormState {}

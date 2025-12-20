@@ -35,11 +35,46 @@ class HomeScreen extends StatelessWidget {
                             builder: (_, state) {
                               switch (state) {
                                 case AlarmClockFormLoading():
+                                  return const Center(child: CircularProgressIndicator());
+                                case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones):
                                   return AlarmEditWidget(
-                                    form: AlarmClockForm.init(clock: AlarmClock.init(TimeOfDay.now())),
+                                    form: AlarmClockForm.init(
+                                      clock: clock,
+                                      ringtones: ringtones,
+                                      onHourChanged: (value) => context.read<AlarmClockFormBloc>().add(
+                                        AlarmClockFormHourChanged(value: value),
+                                      ),
+                                      onMinuteChanged: (value) => context.read<AlarmClockFormBloc>().add(
+                                        AlarmClockFormMinuteChanged(value: value),
+                                      ),
+                                      onLabelChanged: (value) => context.read<AlarmClockFormBloc>().add(
+                                        AlarmClockFormLabelChanged(value: value),
+                                      ),
+                                      onPressDayPeriod: (index) => context.read<AlarmClockFormBloc>().add(
+                                        AlarmClockDayPeriodPressed(index: index),
+                                      ),
+                                      toggleEnable: (enabled) => context.read<AlarmClockFormBloc>().add(
+                                        AlarmClockFormEnableToggled(enabled: enabled),
+                                      ),
+                                      toggleWeekday: (weekday) => context.read<AlarmClockFormBloc>().add(
+                                        AlarmClockFormWeekdayToggled(
+                                          weekday: weekday,
+                                          message: AppLocalizations.of(context)!.infoMsgWeekdayIsEmpty,
+                                        ),
+                                      ),
+                                      toggleVibration: (vibration) => context.read<AlarmClockFormBloc>().add(
+                                        AlarmClockFormVibrationToggled(vibration: vibration),
+                                      ),
+                                      changeRingtone: (ringtone) => context.read<AlarmClockFormBloc>().add(
+                                        AlarmClockFormRingtoneChanged(ringtone: ringtone),
+                                      ),
+                                      playRingtone: (ringtone) => context.read<AlarmClockFormBloc>().add(
+                                        AlarmClockFormRingtonePlayed(ringtone: ringtone),
+                                      ),
+                                      stopRingtone: () =>
+                                          context.read<AlarmClockFormBloc>().add(AlarmClockFormRingtoneStopped()),
+                                    ),
                                   );
-                                case AlarmClockFormLoaded(form: final form):
-                                  return AlarmEditWidget(form: form);
                                 default:
                                   return const SizedBox.shrink();
                               }

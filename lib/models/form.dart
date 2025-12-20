@@ -29,6 +29,7 @@ class AlarmClockForm {
 
   AlarmClockForm.init({
     required this.clock,
+    required this.ringtones,
     this.onHourChanged,
     this.onMinuteChanged,
     this.onLabelChanged,
@@ -54,8 +55,7 @@ class AlarmClockForm {
          controller: TextEditingController(),
          node: FocusNode(),
          onChanged: onLabelChanged,
-       ),
-       ringtones = null;
+       );
 
   AlarmClockForm copyWith({
     AlarmClock? clock,
