@@ -7,10 +7,70 @@ import 'package:chabo/core/core.dart' as core;
 
 import 'constant.dart';
 
-class AlarmEditWidget extends StatelessWidget {
-  final AlarmClockForm form;
+class AlarmEditWidget extends StatefulWidget {
+  final AlarmClock clock;
+  final List<AlarmRingtone>? ringtones;
 
-  const AlarmEditWidget({required this.form});
+  final Function(int index)? onPressDayPeriod;
+  final Function(bool enabled)? onToggleEnable;
+  final Function(bool vibration)? onToggleVibration;
+  final Function(core.Weekday weekday)? onToggleWeekday;
+  final Function(AlarmRingtone ringtone)? onChangeRingtone;
+  final Function(AlarmRingtone ringtone)? onPlayRingtone;
+  final Function()? onStopRingtone;
+
+  const AlarmEditWidget({
+    super.key,
+    required this.clock,
+    this.ringtones,
+    this.onPressDayPeriod,
+    this.onToggleEnable,
+    this.onToggleVibration,
+    this.onToggleWeekday,
+    this.onChangeRingtone,
+    this.onPlayRingtone,
+    this.onStopRingtone,
+  });
+
+  @override
+  State<AlarmEditWidget> createState() => _AlarmEditWidget();
+}
+
+class _AlarmEditWidget extends State<AlarmEditWidget> {
+  late final core.TextEditComponent _hourController;
+  late final core.TextEditComponent _minuteController;
+  late final core.TextEditComponent _labelController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // init controllers
+    _hourController = core.TextEditComponent(
+      controller: TextEditingController(text: widget.clock.hour.toString())
+        ..selection = TextSelection.collapsed(offset: 0),
+      autoFocus: true,
+      node: FocusNode(),
+    );
+    _minuteController = core.TextEditComponent(
+      controller: TextEditingController(text: widget.clock.minute.toString())
+        ..selection = TextSelection.collapsed(offset: 0),
+      node: FocusNode(),
+    );
+    _labelController = core.TextEditComponent(
+      controller: TextEditingController(text: widget.clock.name)
+        ..selection = TextSelection.collapsed(offset: widget.clock.name.length),
+      node: FocusNode(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _hourController.controller.dispose();
+    _minuteController.controller.dispose();
+    _labelController.controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(context) => Padding(
@@ -30,7 +90,7 @@ class AlarmEditWidget extends StatelessWidget {
                 Flexible(
                   flex: 1,
                   child: ToggleButtons(
-                    isSelected: [form.clock.period == DayPeriod.am, form.clock.period == DayPeriod.pm],
+                    isSelected: [widget.clock.period == DayPeriod.am, widget.clock.period == DayPeriod.pm],
                     direction: Axis.vertical,
                     borderRadius: const BorderRadius.all(Radius.circular(Constant.defaultBorderRadius)),
                     borderWidth: Constant.defaultBorderWidth,
@@ -45,16 +105,16 @@ class AlarmEditWidget extends StatelessWidget {
                           (section) => FittedBox(alignment: Alignment.center, child: Text(section.localize(context))),
                         )
                         .toList(),
-                    onPressed: (index) => form.onPressDayPeriod?.call(index),
+                    onPressed: (index) => widget.onPressDayPeriod?.call(index),
                   ),
                 ),
                 Flexible(
                   flex: 2,
                   child: inputFieldTime(
-                    form.hourController,
+                    _hourController,
                     12,
-                    0,
-                    form.clock.hour,
+                    1,
+                    widget.clock.hour,
                     AppLocalizations.of(context)!.hourLong,
                   ),
                 ),
@@ -67,10 +127,10 @@ class AlarmEditWidget extends StatelessWidget {
                 Flexible(
                   flex: 2,
                   child: inputFieldTime(
-                    form.minuteController,
+                    _minuteController,
                     59,
                     0,
-                    form.clock.minute,
+                    widget.clock.minute,
                     AppLocalizations.of(context)!.minuteLong,
                   ),
                 ),
@@ -88,8 +148,8 @@ class AlarmEditWidget extends StatelessWidget {
                 Expanded(
                   flex: 4,
                   child: TextFormField(
-                    controller: form.labelController.controller,
-                    focusNode: form.labelController.node,
+                    controller: _labelController.controller,
+                    focusNode: _labelController.node,
                     decoration: InputDecoration(
                       isCollapsed: true,
                       icon: Icon(Icons.label_outline_rounded, size: Constant.dialogFontSize.sp),
@@ -102,8 +162,7 @@ class AlarmEditWidget extends StatelessWidget {
                     inputFormatters: [LengthLimitingTextInputFormatter(10)],
                     textAlign: TextAlign.left,
                     textAlignVertical: TextAlignVertical.center,
-                    onChanged: (value) => form.onLabelChanged?.call(value),
-                    onFieldSubmitted: (_) => form.labelController.node?.unfocus(),
+                    // onFieldSubmitted: (_) => widget.labelController.node?.unfocus(),
                     style: TextStyle(
                       fontSize: Constant.dialogFontSize.sp,
                       height: 1, // 1 make text align vertical center
@@ -113,8 +172,8 @@ class AlarmEditWidget extends StatelessWidget {
                 Flexible(
                   flex: 1,
                   child: Switch(
-                    value: form.clock.status == core.Status.enabled ? true : false,
-                    onChanged: (value) => form.toggleEnable == null ? null : form.toggleEnable!(value),
+                    value: widget.clock.status == core.Status.enabled ? true : false,
+                    onChanged: (value) => widget.onToggleEnable?.call(value),
                   ),
                 ),
               ],
@@ -130,7 +189,7 @@ class AlarmEditWidget extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.black, width: Constant.weekdayBorderWidth),
-                        color: form.clock.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
+                        color: widget.clock.weekdays.contains(weekday) ? Colors.yellow[200] : Colors.transparent,
                         shape: BoxShape.circle,
                       ),
                       height: Constant.weekdaySize.h,
@@ -139,14 +198,14 @@ class AlarmEditWidget extends StatelessWidget {
                         borderRadius: const BorderRadius.all(Radius.circular(Constant.weekdayCircularRadius)),
                         child: Center(child: Text(weekday.localize(context))),
                         onTap: () {
-                          if (form.clock.weekdays.isEmpty) {
+                          if (widget.clock.weekdays.isEmpty) {
                             core.Snackbar.showSnackbar(
                               context: context,
                               height: Constant.notificationHeight.h,
                               message: AppLocalizations.of(context)!.infoMsgWeekdayIsEmpty,
                             );
                           }
-                          form.toggleWeekday == null ? null : form.toggleWeekday!(weekday);
+                          widget.onToggleWeekday?.call(weekday);
                         },
                       ),
                     ),
@@ -168,7 +227,7 @@ class AlarmEditWidget extends StatelessWidget {
                     Icon(Icons.notifications_active_outlined, size: Constant.dialogFontSize.sp),
                     Text(
                       // TODO: change ringtone name
-                      form.clock.ringtone?.name ?? '',
+                      widget.clock.ringtone?.name ?? '',
                       style: TextStyle(fontSize: Constant.dialogFontSize.sp),
                     ),
                   ],
@@ -204,16 +263,16 @@ class AlarmEditWidget extends StatelessWidget {
                             ),
                           ),
                           const Divider(),
-                          form.ringtones == null
+                          widget.ringtones == null
                               ? const SizedBox.shrink()
                               : Expanded(
                                   child: ListView(
                                     children: [
-                                      for (final alarm in form.ringtones!)
+                                      for (final alarm in widget.ringtones!)
                                         RadioListTile(
                                           dense: true,
                                           value: alarm,
-                                          groupValue: form.clock.ringtone,
+                                          groupValue: widget.clock.ringtone,
                                           title: Row(
                                             children: [
                                               const Expanded(flex: 2, child: Icon(Icons.alarm_outlined)),
@@ -226,7 +285,7 @@ class AlarmEditWidget extends StatelessWidget {
                                           controlAffinity: ListTileControlAffinity.trailing,
                                           onChanged: (selected) {
                                             if (selected != null) {
-                                              form.changeRingtone?.call(selected);
+                                              widget.onChangeRingtone?.call(selected);
                                               Navigator.pop(context);
                                             }
                                           },
@@ -242,21 +301,18 @@ class AlarmEditWidget extends StatelessWidget {
               },
             ),
             onLongPressStart: (_) {
-              if (form.clock.ringtone case final ringtone?) {
-                form.playRingtone?.call(ringtone);
+              if (widget.clock.ringtone case final ringtone?) {
+                widget.onPlayRingtone?.call(ringtone);
               }
             },
-            onLongPressEnd: (_) => form.stopRingtone?.call(),
+            onLongPressEnd: (_) => widget.onStopRingtone?.call(),
           ),
           columnSpacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(Icons.vibration_outlined, size: Constant.dialogFontSize.sp),
-              Switch(
-                value: form.clock.vibration,
-                onChanged: (value) => form.toggleVibration == null ? null : form.toggleVibration!(value),
-              ),
+              Switch(value: widget.clock.vibration, onChanged: (value) => widget.onToggleVibration?.call(value)),
             ],
           ),
         ],
@@ -285,14 +341,12 @@ class AlarmEditWidget extends StatelessWidget {
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(2),
         core.TimeRangeFormatter(max: max, min: min),
       ],
       textAlign: TextAlign.center,
       textAlignVertical: TextAlignVertical.center,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => controller.nextNode?.requestFocus(),
-      onChanged: controller.onChanged,
       style: TextStyle(
         fontSize: Constant.timeFieldFontSizePadding.sp,
         height: 1, // 1 make text align vertical center

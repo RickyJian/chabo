@@ -15,30 +15,6 @@ class AlarmClockDialogOpened extends AlarmClockFormEvent {
   List<Object?> get props => [id];
 }
 
-class AlarmClockFormHourChanged extends AlarmClockFormEvent {
-  final String value;
-  const AlarmClockFormHourChanged({required this.value});
-
-  @override
-  List<Object?> get props => [value];
-}
-
-class AlarmClockFormMinuteChanged extends AlarmClockFormEvent {
-  final String value;
-  const AlarmClockFormMinuteChanged({required this.value});
-
-  @override
-  List<Object?> get props => [value];
-}
-
-class AlarmClockFormLabelChanged extends AlarmClockFormEvent {
-  final String value;
-  const AlarmClockFormLabelChanged({required this.value});
-
-  @override
-  List<Object?> get props => [value];
-}
-
 class AlarmClockDayPeriodPressed extends AlarmClockFormEvent {
   final int index;
   const AlarmClockDayPeriodPressed({required this.index});

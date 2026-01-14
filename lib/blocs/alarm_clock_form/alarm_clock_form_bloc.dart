@@ -17,9 +17,6 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
 
   AlarmClockFormBloc() : super(AlarmClockFormInitial()) {
     on<AlarmClockDialogOpened>(_onAlarmClockDialogOpened);
-    on<AlarmClockFormHourChanged>(_onAlarmClockFormHourChanged);
-    on<AlarmClockFormMinuteChanged>(_onAlarmClockFormMinuteChanged);
-    on<AlarmClockFormLabelChanged>(_onAlarmClockFormLabelChanged);
     on<AlarmClockDayPeriodPressed>(_onAlarmClockDayPeriodPressed);
     on<AlarmClockFormEnableToggled>(_onAlarmClockFormEnableToggled);
     on<AlarmClockFormWeekdayToggled>(_onAlarmClockFormWeekdayToggled);
@@ -42,84 +39,6 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
       clock = AlarmClock.init(TimeOfDay.now())..copyWith(ringtone: ringtones.first);
     }
     emit(AlarmClockFormLoaded(clock: clock, ringtones: ringtones));
-  }
-
-  void _onAlarmClockFormHourChanged(AlarmClockFormHourChanged event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
-      var hour = int.tryParse(event.value);
-      if (hour == null) {
-        emit(
-          AlarmClockFormLoaded(clock: clock, ringtones: ringtones, errorCode: core.AlarmClockFormErrorCode.hourInvalid),
-        );
-      } else if (hour < 0 || hour > 23) {
-        emit(
-          AlarmClockFormLoaded(
-            clock: clock,
-            ringtones: ringtones,
-            errorCode: core.AlarmClockFormErrorCode.hourOutOfRange,
-          ),
-        );
-      } else {
-        emit(
-          AlarmClockFormLoaded(
-            clock: clock.copyWith(hour: hour),
-            ringtones: ringtones,
-          ),
-        );
-      }
-    }
-  }
-
-  void _onAlarmClockFormMinuteChanged(AlarmClockFormMinuteChanged event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
-      var minute = int.tryParse(event.value);
-      if (minute == null) {
-        emit(
-          AlarmClockFormLoaded(
-            clock: clock,
-            ringtones: ringtones,
-            errorCode: core.AlarmClockFormErrorCode.minuteInvalid,
-          ),
-        );
-      } else if (minute < 0 || minute > 59) {
-        emit(
-          AlarmClockFormLoaded(
-            clock: clock,
-            ringtones: ringtones,
-            errorCode: core.AlarmClockFormErrorCode.minuteOutOfRange,
-          ),
-        );
-      } else {
-        emit(
-          AlarmClockFormLoaded(
-            clock: clock.copyWith(minute: minute),
-            ringtones: ringtones,
-          ),
-        );
-      }
-    }
-  }
-
-  void _onAlarmClockFormLabelChanged(AlarmClockFormLabelChanged event, Emitter<AlarmClockFormState> emit) {
-    if (state case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones)) {
-      var name = event.value.trim();
-      if (name.length > 10) {
-        emit(
-          AlarmClockFormLoaded(
-            clock: clock,
-            ringtones: ringtones,
-            errorCode: core.AlarmClockFormErrorCode.labelOutOfLength,
-          ),
-        );
-      } else {
-        emit(
-          AlarmClockFormLoaded(
-            clock: clock.copyWith(name: name),
-            ringtones: ringtones,
-          ),
-        );
-      }
-    }
   }
 
   void _onAlarmClockDayPeriodPressed(AlarmClockDayPeriodPressed event, Emitter<AlarmClockFormState> emit) {
