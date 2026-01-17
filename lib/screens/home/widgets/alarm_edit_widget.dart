@@ -33,10 +33,10 @@ class AlarmEditWidget extends StatefulWidget {
   });
 
   @override
-  State<AlarmEditWidget> createState() => _AlarmEditWidget();
+  State<AlarmEditWidget> createState() => AlarmEditWidgetState();
 }
 
-class _AlarmEditWidget extends State<AlarmEditWidget> {
+class AlarmEditWidgetState extends State<AlarmEditWidget> {
   late final core.TextEditComponent _hourController;
   late final core.TextEditComponent _minuteController;
   late final core.TextEditComponent _labelController;
@@ -62,13 +62,30 @@ class _AlarmEditWidget extends State<AlarmEditWidget> {
         ..selection = TextSelection.collapsed(offset: widget.clock.name.length),
       node: FocusNode(),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _hourController.node != null) {
+        _hourController.node!.requestFocus();
+      }
+    });
+  }
+
+  AlarmClock get clock {
+    return widget.clock.copyWith(
+      hour: int.tryParse(_hourController.controller.text),
+      minute: int.tryParse(_minuteController.controller.text),
+      name: _labelController.controller.text,
+    );
   }
 
   @override
   void dispose() {
     _hourController.controller.dispose();
+    _hourController.node?.dispose();
     _minuteController.controller.dispose();
+    _minuteController.node?.dispose();
     _labelController.controller.dispose();
+    _labelController.node?.dispose();
     super.dispose();
   }
 
@@ -268,28 +285,34 @@ class _AlarmEditWidget extends State<AlarmEditWidget> {
                               : Expanded(
                                   child: ListView(
                                     children: [
-                                      for (final alarm in widget.ringtones!)
-                                        RadioListTile(
-                                          dense: true,
-                                          value: alarm,
-                                          groupValue: widget.clock.ringtone,
-                                          title: Row(
-                                            children: [
-                                              const Expanded(flex: 2, child: Icon(Icons.alarm_outlined)),
-                                              Expanded(
-                                                flex: 8,
-                                                child: Text(alarm.name, style: TextStyle(fontSize: 20.sp)),
+                                      RadioGroup<AlarmRingtone>(
+                                        groupValue: widget.clock.ringtone,
+                                        onChanged: (selected) {
+                                          if (selected != null) {
+                                            widget.onChangeRingtone?.call(selected);
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                        child: Column(
+                                          children: [
+                                            for (final alarm in widget.ringtones!)
+                                              RadioListTile(
+                                                dense: true,
+                                                value: alarm,
+                                                title: Row(
+                                                  children: [
+                                                    const Expanded(flex: 2, child: Icon(Icons.alarm_outlined)),
+                                                    Expanded(
+                                                      flex: 8,
+                                                      child: Text(alarm.name, style: TextStyle(fontSize: 20.sp)),
+                                                    ),
+                                                  ],
+                                                ),
+                                                controlAffinity: ListTileControlAffinity.trailing,
                                               ),
-                                            ],
-                                          ),
-                                          controlAffinity: ListTileControlAffinity.trailing,
-                                          onChanged: (selected) {
-                                            if (selected != null) {
-                                              widget.onChangeRingtone?.call(selected);
-                                              Navigator.pop(context);
-                                            }
-                                          },
+                                          ],
                                         ),
+                                      ),
                                     ],
                                   ),
                                 ),

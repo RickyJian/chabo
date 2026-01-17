@@ -41,13 +41,13 @@ class AlarmClockForm {
     this.playRingtone,
     this.stopRingtone,
   }) : hourController = TextEditComponent(
-         controller: TextEditingController(text: clock.hour.toString().padLeft(2, '0')),
+         controller: TextEditingController(text: clock.hour.toString()),
          autoFocus: true,
          node: FocusNode(),
          onChanged: onHourChanged,
        ),
        minuteController = TextEditComponent(
-         controller: TextEditingController(text: clock.minute.toString().padLeft(2, '0')),
+         controller: TextEditingController(text: clock.minute.toString()),
          node: FocusNode(),
          onChanged: onMinuteChanged,
        ),

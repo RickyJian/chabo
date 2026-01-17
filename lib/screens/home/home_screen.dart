@@ -22,6 +22,7 @@ class HomeScreen extends StatelessWidget {
             case DialogClose():
               Navigator.of(context, rootNavigator: true).pop();
             case DialogReady():
+              final alarmEditKey = GlobalKey<AlarmEditWidgetState>();
               showDialog(
                 useRootNavigator: true,
                 barrierDismissible: false,
@@ -36,8 +37,11 @@ class HomeScreen extends StatelessWidget {
                               switch (state) {
                                 case AlarmClockFormLoading():
                                   return const Center(child: CircularProgressIndicator());
-                                case AlarmClockFormLoaded(clock: final clock, ringtones: final ringtones):
+                                case AlarmClockFormLoaded(clock: AlarmClock clock, ringtones: final ringtones):
+                                  final ringtone = clock.ringtone ?? ringtones.first;
+                                  clock = clock.copyWith(ringtone: ringtone);
                                   return AlarmEditWidget(
+                                    key: alarmEditKey,
                                     clock: clock,
                                     ringtones: ringtones,
                                     onPressDayPeriod: (index) => context.read<AlarmClockFormBloc>().add(
@@ -68,6 +72,25 @@ class HomeScreen extends StatelessWidget {
                                   return const SizedBox.shrink();
                               }
                             },
+                          ),
+                          footer: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              core.DialogFooterButton(
+                                label: AppLocalizations.of(context)!.cancel,
+                                onPressed: () => context.read<DialogBloc>().add(DialogClosed()),
+                              ),
+                              core.DialogFooterButton(
+                                label: AppLocalizations.of(context)!.save,
+                                onPressed: () {
+                                  FocusScope.of(context).unfocus();
+                                  context.read<AlarmClockFormBloc>().add(
+                                    AlarmClockFormUpdated(clock: alarmEditKey.currentState!.clock),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -194,23 +217,6 @@ class HomeScreen extends StatelessWidget {
                             titleHeight: Constant.dialogHeaderHeight.h,
                             contentHeight: Constant.dialogContentHeight.h,
                             fallbackHeight: Constant.dialogContentHeight.h,
-                            footer: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                core.DialogFooterButton(
-                                  label: AppLocalizations.of(context)!.cancel,
-                                  onPressed: () => context.read<DialogBloc>().add(DialogClosed()),
-                                ),
-                                core.DialogFooterButton(
-                                  label: AppLocalizations.of(context)!.save,
-                                  onPressed: () {
-                                    FocusScope.of(context).unfocus();
-                                    context.read<AlarmClockFormBloc>().add(AlarmClockFormUpdated(clock: clock));
-                                  },
-                                ),
-                              ],
-                            ),
                             footerHeight: Constant.dialogFooterHeight.h,
                           ),
                         ),
@@ -251,20 +257,6 @@ class HomeScreen extends StatelessWidget {
                           titleHeight: Constant.dialogHeaderHeight.h,
                           contentHeight: Constant.dialogContentHeight.h,
                           fallbackHeight: Constant.dialogContentHeight.h,
-                          footer: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              core.DialogFooterButton(
-                                label: AppLocalizations.of(context)!.cancel,
-                                onPressed: () => context.read<DialogBloc>().add(DialogClosed()),
-                              ),
-                              core.DialogFooterButton(
-                                label: AppLocalizations.of(context)!.save,
-                                onPressed: () => context.read<AlarmClockFormBloc>().add(AlarmClockFormAdded()),
-                              ),
-                            ],
-                          ),
                           footerHeight: Constant.dialogFooterHeight.h,
                         ),
                       ),
