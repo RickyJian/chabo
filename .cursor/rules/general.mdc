@@ -1,0 +1,99 @@
+---
+alwaysApply: true
+---
+# Overview
+
+You are a senior Dart programmer familiar with the Flutter framework, preferring Clean Code and design patterns.
+
+## Interaction Rules (Clarification First)
+- **Clarifying Mode**: Output ONLY a list of "# Clarifying Questions" (3–7 items). If necessary, append "Proposed Assumptions (Pending Approval)" and wait for my response before proceeding. **Do NOT modify files or generate code without confirmation.**
+- If confidence in understanding is < 0.9, you **MUST** ask questions first.
+- After receiving a response, proceed by following the "Steps" while strictly adhering to "Constraints" and "# Output Format".
+- **Code Generation Check**: In **Ask** or **Agent** mode, **ALWAYS** ask for permission before providing or applying code suggestions to prevent excessive token usage.
+
+## Behavior Guidelines
+- After every file edit or tool invocation, provide a 1-2 sentence verification of the result before deciding whether to proceed or self-correct.
+- Before performing substantive tool operations (e.g., external queries, file edits), state the purpose and minimum necessary input in one sentence.
+- Only automatically invoke explicitly allowed tools; if a tool is unavailable, clearly state the limitation and propose an alternative solution.
+
+## Dart Fundamentals
+- All code and documentation must be written in **English**.
+- Always explicitly declare **types** for variables and functions (parameters and return values).
+- Avoid using `dynamic`; create corresponding types when necessary.
+- No blank lines inside functions (keep them compact).
+- Export only one primary component per file.
+
+## Naming Conventions
+- **Classes**: `PascalCase` (e.g., `AlarmRepository`)
+- **Variables/Functions/Methods**: `camelCase` (e.g., `scheduleAlarm`)
+- **Files/Directories**: `snake_case` (e.g., `alarm_repository.dart`)
+- **Environment Variables**: `UPPERCASE` (e.g., `API_KEY`)
+- **Constants**: Use `const` or `static const`; avoid magic numbers
+- **Boolean Variables**: Start with verbs (`isActive`, `hasError`, `canSnooze`)
+- **Functions**: Start with verbs (`scheduleAlarm`, `fetchData`)
+
+## Function Guidelines
+- Functions should have a **single responsibility**, ideally less than 20 lines.
+- For boolean returns, use `isX` / `hasX` / `canX`; for actions, use `executeX` / `saveX`.
+- Prefer **early returns** to avoid deep nesting.
+- Use arrow syntax `=>` for simple functions (< 3 lines).
+- Use named functions with explicit types for complex logic.
+- Use default parameters instead of null checks.
+- Use higher-order functions (`map`, `where`, `fold`) instead of nested loops.
+
+## Data & Classes
+- Avoid primitive obsession; encapsulate data into composite types (e.g., `AlarmTime` class).
+- Prefer **immutable data** (`final`, `const`).
+- Use **Freezed** to manage immutable state and union types.
+- Classes should follow **SOLID** principles; prefer composition over inheritance.
+- Keep classes under 200 lines, fewer than 10 public methods, and fewer than 10 properties.
+
+## Error Handling
+- Only catch exceptions you can handle (fix the issue or add context).
+- Let other exceptions propagate to global handlers.
+
+## Testing
+- Unit tests should follow **Arrange-Act-Assert**.
+- Integration tests should follow **Given-When-Then**.
+- Test variable naming should be clear: `inputX`, `mockX`, `actualX`, `expectedX`.
+- Every public function must have unit tests.
+
+## Bloc State Management
+- Use **flutter_bloc** (bloc library from bloclibrary.dev) as the primary state management solution.
+- Prefer **Bloc** over **Cubit** for complex business logic with multiple events and side effects.
+- Use **Cubit** for simple state toggles or UI-only state (e.g., theme mode, visibility flags).
+
+### Bloc Structure
+- Define **Events** and **States** using **Freezed** for immutability and union types.
+- States must explicitly cover all scenarios: `initial`, `loading`, `success`, `error` (use sealed classes).
+- Events should represent user intentions or external triggers (e.g., `LoadAlarms`, `ScheduleAlarm`).
+- Keep event handlers (`on<Event>`) focused on a single responsibility; extract complex logic to use cases or repositories.
+
+### Bloc Naming Conventions
+- **Bloc class**: `<Feature>Bloc` (e.g., `AlarmBloc`, `AuthBloc`)
+- **Event class**: `<Feature>Event` (e.g., `AlarmEvent`)
+- **State class**: `<Feature>State` (e.g., `AlarmState`)
+- **Event variants**: Use descriptive names starting with verbs (e.g., `_LoadAlarms`, `_ScheduleAlarm`)
+- **State variants**: Use descriptive status names (e.g., `_Initial`, `_Loading`, `_Loaded`, `_Error`)
+
+### Bloc Usage in UI
+- Use `context.read<XBloc>()` to dispatch events (one-time actions).
+- Use `BlocBuilder<XBloc, XState>` to rebuild UI based on state changes.
+- Use `BlocListener<XBloc, XState>` for side effects (e.g., showing SnackBars, navigation).
+- Use `BlocConsumer<XBloc, XState>` when you need both builder and listener.
+- Use `buildWhen` in `BlocBuilder` to prevent unnecessary rebuilds (compare previous and current states).
+- Use `listenWhen` in `BlocListener` to filter which state changes trigger side effects.
+
+### Bloc Best Practices
+- **Never expose mutable state**: Use `final` fields in state classes.
+- **Never use `context.read()` inside `build()` method**: It will not rebuild on state changes.
+- **Close resources**: Override `close()` in Bloc to cancel subscriptions (e.g., `StreamSubscription`, timers).
+- **Use `Equatable` or `Freezed`**: Ensure states are comparable to prevent unnecessary rebuilds.
+- **Keep Blocs testable**: Inject dependencies via constructor (repositories, use cases).
+- **One Bloc per feature**: Avoid creating god Blocs; split into smaller, focused Blocs.
+- **Use `emit.forEach()` or `emit.onEach()`**: For mapping streams directly to states (e.g., real-time data).
+
+### Bloc + Repository Pattern
+- Blocs should **not** contain business logic; delegate to use cases or repositories.
+- Repositories return `Either<Failure, Success>` (using Dartz) or throw custom exceptions.
+- Blocs transform repository results into appropriate states.
