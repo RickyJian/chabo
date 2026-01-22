@@ -8,6 +8,10 @@ class AlarmClockRepository {
     return await _helper.insertAlarmClock(clock);
   }
 
+  Future<AlarmClock> updateAlarmClock(AlarmClock clock) async {
+    return await _helper.updateAlarmClock(clock);
+  }
+
   Future<List<AlarmClock>> listAlarmClocks() async {
     return await _helper.listAlarmClocks();
   }

@@ -6,7 +6,7 @@ class Constant {
   static const int databaseVersion = 1;
 
   /// alarm_clocks table
-  static const String alarmClocksTable = 'alarm_clocks';
+  static const String tableAlarmClock = 'alarm_clocks';
 
   /// alarm_clocks columns
   static const String columnId = 'id';

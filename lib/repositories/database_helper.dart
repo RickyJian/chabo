@@ -32,7 +32,7 @@ class DatabaseHelper {
       version: Constant.databaseVersion,
       onCreate: (Database db, int version) async {
         await db.execute('''
-          CREATE TABLE IF NOT EXISTS ${Constant.alarmClocksTable} (
+          CREATE TABLE IF NOT EXISTS ${Constant.tableAlarmClock} (
             ${Constant.columnId} TEXT PRIMARY KEY,
             ${Constant.columnHour} INTEGER NOT NULL,
             ${Constant.columnMinute} INTEGER NOT NULL,
@@ -58,7 +58,22 @@ class DatabaseHelper {
   Future<AlarmClock> insertAlarmClock(AlarmClock clock) async {
     try {
       final conn = await database;
-      await conn.insert(Constant.alarmClocksTable, clock.toMap());
+      await conn.insert(Constant.tableAlarmClock, clock.toMap());
+      return clock;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<AlarmClock> updateAlarmClock(AlarmClock clock) async {
+    try {
+      final conn = await database;
+      await conn.update(
+        Constant.tableAlarmClock,
+        clock.toMap(),
+        where: '${Constant.columnId} = ?',
+        whereArgs: [clock.id],
+      );
       return clock;
     } catch (e) {
       rethrow;
@@ -69,7 +84,7 @@ class DatabaseHelper {
     try {
       final conn = await database;
       final result = await conn.query(
-        Constant.alarmClocksTable,
+        Constant.tableAlarmClock,
         where: id == null ? null : '${Constant.columnId} = ?',
         whereArgs: id == null ? null : [id],
       );

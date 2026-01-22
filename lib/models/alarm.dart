@@ -36,7 +36,7 @@ class AlarmClock {
        ringtone = ringtone ?? null;
 
   AlarmClock.init(TimeOfDay t)
-    : id = Ulid().toString(),
+    : id = '',
       hour = t.hourOfPeriod,
       minute = t.minute,
       period = t.period,

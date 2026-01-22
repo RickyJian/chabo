@@ -7,6 +7,7 @@ import 'package:chabo/core/core.dart' as core;
 import 'dart:convert';
 import 'dart:developer';
 import 'package:chabo/repositories/reporistories.dart';
+import 'package:ulid/ulid.dart';
 
 part 'alarm_clock_form_event.dart';
 part 'alarm_clock_form_state.dart';
@@ -25,6 +26,7 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
     on<AlarmClockFormRingtonePlayed>(_onAlarmClockFormRingtonePlayed);
     on<AlarmClockFormRingtoneStopped>(_onAlarmClockFormRingtoneStopped);
     on<AlarmClockFormAdded>(_onAlarmClockFormAdded);
+    on<AlarmClockFormUpdated>(_onAlarmClockFormUpdated);
   }
 
   void _onAlarmClockDialogOpened(AlarmClockDialogOpened event, Emitter<AlarmClockFormState> emit) async {
@@ -127,9 +129,13 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
       await alarmChannel.invokeMethod('stopSystemAlarm').catchError((error) => log(error));
 
   Future<void> _onAlarmClockFormAdded(AlarmClockFormAdded event, Emitter<AlarmClockFormState> emit) async {
-    if (state case AlarmClockFormLoaded(clock: final clock)) {
-      await _repository.createAlarmClock(clock);
-      emit(AlarmClockFormSuccess());
-    }
+    final AlarmClock clockToSave = event.clock.id.isEmpty ? event.clock.copyWith(id: Ulid().toString()) : event.clock;
+    await _repository.createAlarmClock(clockToSave);
+    emit(AlarmClockFormSuccess());
+  }
+
+  Future<void> _onAlarmClockFormUpdated(AlarmClockFormUpdated event, Emitter<AlarmClockFormState> emit) async {
+    await _repository.updateAlarmClock(event.clock);
+    emit(AlarmClockFormSuccess());
   }
 }

@@ -85,9 +85,12 @@ class HomeScreen extends StatelessWidget {
                                 label: AppLocalizations.of(context)!.save,
                                 onPressed: () {
                                   FocusScope.of(context).unfocus();
-                                  context.read<AlarmClockFormBloc>().add(
-                                    AlarmClockFormUpdated(clock: alarmEditKey.currentState!.clock),
-                                  );
+                                  final clock = alarmEditKey.currentState!.clock;
+                                  if (clock.id.isEmpty) {
+                                    context.read<AlarmClockFormBloc>().add(AlarmClockFormAdded(clock: clock));
+                                  } else {
+                                    context.read<AlarmClockFormBloc>().add(AlarmClockFormUpdated(clock: clock));
+                                  }
                                 },
                               ),
                             ],

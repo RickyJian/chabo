@@ -18,11 +18,7 @@ class DialogModel {
     this.footer,
     this.footerHeight,
   }) : assert(titleHeight > 0, 'titleHeight must be greater than 0'),
-       assert(contentHeight > 0, 'contentHeight must be greater than 0'),
-       assert(
-         footer != null ? (footerHeight != null && footerHeight > 0) : footerHeight == 0,
-         '1. footer != null then footerHeight > 0\n2. footer == null  then footerHeight = 0',
-       );
+       assert(contentHeight > 0, 'contentHeight must be greater than 0');
 
   DialogModel copyWith({
     String? title,

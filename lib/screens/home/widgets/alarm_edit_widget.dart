@@ -179,7 +179,6 @@ class AlarmEditWidgetState extends State<AlarmEditWidget> {
                     inputFormatters: [LengthLimitingTextInputFormatter(10)],
                     textAlign: TextAlign.left,
                     textAlignVertical: TextAlignVertical.center,
-                    // onFieldSubmitted: (_) => widget.labelController.node?.unfocus(),
                     style: TextStyle(
                       fontSize: Constant.dialogFontSize.sp,
                       height: 1, // 1 make text align vertical center

@@ -73,7 +73,8 @@ class AlarmClockFormRingtoneStopped extends AlarmClockFormEvent {
 }
 
 class AlarmClockFormAdded extends AlarmClockFormEvent {
-  const AlarmClockFormAdded();
+  final AlarmClock clock;
+  const AlarmClockFormAdded({required this.clock});
 
   @override
   List<Object?> get props => [];
