@@ -89,9 +89,9 @@ class AlarmClockFormUpdated extends AlarmClockFormEvent {
 }
 
 class AlarmClockFormDeleted extends AlarmClockFormEvent {
-  final AlarmClock clock;
-  const AlarmClockFormDeleted({required this.clock});
+  final String id;
+  const AlarmClockFormDeleted({required this.id});
 
   @override
-  List<Object?> get props => [clock];
+  List<Object?> get props => [id];
 }

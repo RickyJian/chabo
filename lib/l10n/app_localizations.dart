@@ -224,6 +224,12 @@ abstract class AppLocalizations {
   /// **'When week days are disabled, will set every day enabled.'**
   String get infoMsgWeekdayIsEmpty;
 
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'remove'**
+  String get remove;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:

@@ -20,4 +20,8 @@ class AlarmClockRepository {
     final clocks = await _helper.listAlarmClocks(id: id);
     return clocks.first;
   }
+
+  Future<void> deleteAlarmClock(String id) async {
+    return await _helper.deleteAlarmClock(id);
+  }
 }

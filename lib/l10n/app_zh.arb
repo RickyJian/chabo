@@ -20,6 +20,7 @@
   "labelEmpty": "未設定標籤",
   "labelHint": "請輸入標籤",
   "infoMsgWeekdayIsEmpty": "當星期皆為非啟用時，自動將每天設定為啟用。",
+  "remove": "刪除",
   "cancel": "取消",
   "save": "存檔",
   "clockCreateTitle": "新增鬧鐘",

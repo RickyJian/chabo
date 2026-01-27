@@ -73,6 +73,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'When week days are disabled, will set every day enabled.';
 
   @override
+  String get remove => 'remove';
+
+  @override
   String get cancel => 'cancel';
 
   @override

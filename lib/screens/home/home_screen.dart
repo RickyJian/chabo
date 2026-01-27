@@ -77,6 +77,17 @@ class HomeScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              if (alarmEditKey.currentState?.clock.id.isNotEmpty ?? false)
+                                core.DialogFooterButton(
+                                  label: AppLocalizations.of(context)!.remove,
+                                  onPressed: () {
+                                    FocusScope.of(context).unfocus();
+                                    context.read<AlarmClockFormBloc>().add(
+                                      AlarmClockFormDeleted(id: alarmEditKey.currentState!.clock.id),
+                                    );
+                                  },
+                                ),
+                              const Spacer(),
                               core.DialogFooterButton(
                                 label: AppLocalizations.of(context)!.cancel,
                                 onPressed: () => context.read<DialogBloc>().add(DialogClosed()),

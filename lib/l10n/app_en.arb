@@ -20,6 +20,7 @@
   "labelEmpty": "empty label",
   "labelHint": "input label",
   "infoMsgWeekdayIsEmpty": "When week days are disabled, will set every day enabled.",
+  "remove": "remove",
   "cancel": "cancel",
   "save": "save",
   "clockCreateTitle": "New Alarm Clock",

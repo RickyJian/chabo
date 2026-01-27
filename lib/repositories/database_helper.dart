@@ -93,4 +93,13 @@ class DatabaseHelper {
       rethrow;
     }
   }
+
+  Future<void> deleteAlarmClock(String id) async {
+    try {
+      final conn = await database;
+      await conn.delete(Constant.tableAlarmClock, where: '${Constant.columnId} = ?', whereArgs: [id]);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

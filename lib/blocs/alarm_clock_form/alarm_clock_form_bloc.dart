@@ -27,6 +27,7 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
     on<AlarmClockFormRingtoneStopped>(_onAlarmClockFormRingtoneStopped);
     on<AlarmClockFormAdded>(_onAlarmClockFormAdded);
     on<AlarmClockFormUpdated>(_onAlarmClockFormUpdated);
+    on<AlarmClockFormDeleted>(_onAlarmClockFormDeleted);
   }
 
   void _onAlarmClockDialogOpened(AlarmClockDialogOpened event, Emitter<AlarmClockFormState> emit) async {
@@ -136,6 +137,11 @@ class AlarmClockFormBloc extends Bloc<AlarmClockFormEvent, AlarmClockFormState> 
 
   Future<void> _onAlarmClockFormUpdated(AlarmClockFormUpdated event, Emitter<AlarmClockFormState> emit) async {
     await _repository.updateAlarmClock(event.clock);
+    emit(AlarmClockFormSuccess());
+  }
+
+  Future<void> _onAlarmClockFormDeleted(AlarmClockFormDeleted event, Emitter<AlarmClockFormState> emit) async {
+    await _repository.deleteAlarmClock(event.id);
     emit(AlarmClockFormSuccess());
   }
 }

@@ -72,6 +72,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get infoMsgWeekdayIsEmpty => '當星期皆為非啟用時，自動將每天設定為啟用。';
 
   @override
+  String get remove => '刪除';
+
+  @override
   String get cancel => '取消';
 
   @override
